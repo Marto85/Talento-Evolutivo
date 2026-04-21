@@ -1,0 +1,35 @@
+[
+  {
+    "id": "epl-001",
+    "nombre": "Carlos",
+    "apellido": "Fernández",
+    "dni": "28456789",
+    "empresaId": "emp-002",
+    "puesto": "Operario",
+    "salarioBase": 350000,
+    "activo": true,
+    "fechaIngreso": "2021-06-01"
+  },
+  {
+    "id": "epl-002",
+    "nombre": "Laura",
+    "apellido": "Gómez",
+    "dni": "32567890",
+    "empresaId": "emp-002",
+    "puesto": "Administrativa",
+    "salarioBase": 420000,
+    "activo": true,
+    "fechaIngreso": "2020-03-15"
+  },
+  {
+    "id": "epl-003",
+    "nombre": "Raul",
+    "apellido": "Tarufetti",
+    "dni": "25678901",
+    "empresaId": "emp-002",
+    "puesto": "Supervisor",
+    "salarioBase": 550000,
+    "activo": true,
+    "fechaIngreso": "2019-11-20"
+  }
+]

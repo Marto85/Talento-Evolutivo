@@ -1,0 +1,26 @@
+extends ../layout
+
+block contenido
+  h2= titulo
+  .card
+    form(method="POST" action=accion)
+      .campo
+        label Razón Social
+        input(type="text" name="razonSocial" value=empresa ? empresa.razonSocial : "" required)
+      .campo
+        label CUIT
+        input(type="text" name="cuit" value=empresa ? empresa.cuit : "" required placeholder="30-12345678-9")
+      .campo
+        label Contacto
+        input(type="text" name="contacto" value=empresa ? empresa.contacto : "" required)
+      .campo
+        label Email
+        input(type="email" name="email" value=empresa ? empresa.email : "" required)
+      if empresa
+        .campo
+          label.checkbox-label
+            input(type="checkbox" name="activa" checked=empresa.activa)
+            | Activa
+      .form-acciones
+        button.btn.btn-primary(type="submit") Guardar
+        a.btn(href="/empresas" style="background:#95a5a6;color:white") Cancelar

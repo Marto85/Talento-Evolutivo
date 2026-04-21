@@ -1,0 +1,17 @@
+{
+  "name": "talento-evolutivo",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de liquidación de haberes - Talento Evolutivo S.A.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "pug": "^3.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

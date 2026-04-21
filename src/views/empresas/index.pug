@@ -1,0 +1,35 @@
+extends ../layout
+
+block contenido
+  h2 Empresas
+  p
+    a.btn.btn-primary(href="/empresas/nueva") + Nueva Empresa
+  br
+  table
+    thead
+      tr
+        th ID
+        th Razón Social
+        th CUIT
+        th Contacto
+        th Email
+        th Activa
+        th Acciones
+    tbody
+      each empresa in empresas
+        tr
+          td= empresa.id
+          td= empresa.razonSocial
+          td= empresa.cuit
+          td= empresa.contacto
+          td= empresa.email
+          td
+            span(class="badge " + (empresa.activa ? "badge-si" : "badge-no"))= empresa.activa ? "Sí" : "No"
+          td
+            .acciones
+              a.btn.btn-warning(href=`/empresas/${empresa.id}/editar`) Editar
+              form(method="POST" action=`/empresas/${empresa.id}/eliminar` style="display:inline")
+                button.btn.btn-danger(type="submit" onclick="return confirm('¿Eliminar empresa?')") Eliminar
+      if empresas.length === 0
+        tr
+          td(colspan="7" style="text-align:center;color:#999") No hay empresas registradas

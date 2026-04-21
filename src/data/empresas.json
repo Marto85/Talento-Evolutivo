@@ -1,0 +1,29 @@
+[
+  {
+    "id": "emp-002",
+    "razonSocial": "Textil Pampeana S.R.L.",
+    "cuit": "30-98765432-1",
+    "contacto": "María López",
+    "email": "mlopez@textilpampeana.com",
+    "activa": true,
+    "fechaAlta": "2023-03-10"
+  },
+  {
+    "id": "emp-003",
+    "razonSocial": "test",
+    "cuit": "30-40010465-5",
+    "contacto": "1120204040",
+    "email": "a@a.com",
+    "activa": true,
+    "fechaAlta": "2026-04-17"
+  },
+  {
+    "id": "emp-004",
+    "razonSocial": "Tarufetti SA",
+    "cuit": "30-45656587-5",
+    "contacto": "Raulito",
+    "email": "tarufetti@cochabamba.com",
+    "activa": true,
+    "fechaAlta": "2026-04-21"
+  }
+]

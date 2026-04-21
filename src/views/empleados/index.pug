@@ -1,0 +1,39 @@
+extends ../layout
+
+block contenido
+  h2 Empleados
+  p
+    a.btn.btn-primary(href="/empleados/nuevo") + Nuevo Empleado
+  br
+  table
+    thead
+      tr
+        th ID
+        th Nombre
+        th Apellido
+        th DNI
+        th Empresa
+        th Puesto
+        th Salario Base
+        th Activo
+        th Acciones
+    tbody
+      each empleado in empleados
+        tr
+          td= empleado.id
+          td= empleado.nombre
+          td= empleado.apellido
+          td= empleado.dni
+          td= empleado.empresaNombre
+          td= empleado.puesto
+          td= "$" + empleado.salarioBase.toLocaleString("es-AR")
+          td
+            span(class="badge " + (empleado.activo ? "badge-si" : "badge-no"))= empleado.activo ? "Sí" : "No"
+          td
+            .acciones
+              a.btn.btn-warning(href=`/empleados/${empleado.id}/editar`) Editar
+              form(method="POST" action=`/empleados/${empleado.id}/eliminar` style="display:inline")
+                button.btn.btn-danger(type="submit" onclick="return confirm('¿Eliminar empleado?')") Eliminar
+      if empleados.length === 0
+        tr
+          td(colspan="9" style="text-align:center;color:#999") No hay empleados registrados
