@@ -10,7 +10,7 @@ Aplicación web para la gestión de empresas y empleados, desarrollada con Node.
 - Almacenamiento en archivos JSON
 
 ## Estructura del proyecto
-
+```
 src/
 ├── app.js
 ├── controllers/
@@ -37,7 +37,7 @@ src/
     └── empleados/
         ├── index.pug
         └── form.pug
-
+```
 ## Instalación
 
 ```bash
