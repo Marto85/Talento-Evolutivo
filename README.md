@@ -12,17 +12,16 @@ Aplicación web para la gestión de empresas y empleados, desarrollada con Node.
 ## Estructura del proyecto
 
 src/
-├── app.js                        
+├── app.js
 ├── controllers/
 │   ├── empresa.controller.js
 │   └── empleado.controller.js
 ├── data/
-│   ├── db.js                     
+│   ├── db.js
 │   ├── empresas.json
 │   └── empleados.json
 ├── middlewares/
-│   ├── A IMPLEMENTAR
-
+│   └──  (A implementar)
 ├── models/
 │   ├── Empresa.js
 │   └── Empleado.js
@@ -38,7 +37,6 @@ src/
     └── empleados/
         ├── index.pug
         └── form.pug
-```
 
 ## Instalación
 
