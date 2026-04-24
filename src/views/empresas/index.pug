@@ -1,35 +1,116 @@
 extends ../layout
 
 block contenido
-  h2 Empresas
-  p
-    a.btn.btn-primary(href="/empresas/nueva") + Nueva Empresa
+  .page-header
+    h2 Empresas
+    button.btn.btn-primary(type="button" onclick="openModal('modal-nueva')") + Nueva Empresa
   br
   table
     thead
       tr
-        th ID
         th Razón Social
         th CUIT
         th Contacto
         th Email
         th Activa
+        th Empleados
         th Acciones
     tbody
       each empresa in empresas
         tr
-          td= empresa.id
           td= empresa.razonSocial
           td= empresa.cuit
           td= empresa.contacto
           td= empresa.email
           td
             span(class="badge " + (empresa.activa ? "badge-si" : "badge-no"))= empresa.activa ? "Sí" : "No"
+          td= empresa.cantidadEmpleados
           td
             .acciones
-              a.btn.btn-warning(href=`/empresas/${empresa.id}/editar`) Editar
-              form(method="POST" action=`/empresas/${empresa.id}/eliminar` style="display:inline")
-                button.btn.btn-danger(type="submit" onclick="return confirm('¿Eliminar empresa?')") Eliminar
+              a.btn-icon(href=`/empresas/${empresa.id}/empleados` title="Ver empleados")
+                i.fas.fa-users
+              button.btn-icon(type="button" onclick=`openModal('modal-edit-${empresa.id}')` title="Editar")
+                i.fas.fa-pencil-alt
+              button.btn-icon.icon-danger(type="button" data-id=empresa.id data-nombre=empresa.razonSocial title="Eliminar" onclick="openDeleteModal(this)")
+                i.fas.fa-trash
       if empresas.length === 0
         tr
           td(colspan="7" style="text-align:center;color:#999") No hay empresas registradas
+
+  //- Modal Nueva Empresa
+  #modal-nueva.modal-overlay(style="display:none")
+    .modal-box
+      h3 Nueva Empresa
+      form(method="POST" action="/empresas")
+        .campo
+          label Razón Social
+          input(type="text" name="razonSocial" required)
+        .campo
+          label CUIT
+          input(type="text" name="cuit" required placeholder="30-12345678-9")
+        .campo
+          label Contacto
+          input(type="text" name="contacto" required)
+        .campo
+          label Email
+          input(type="email" name="email" required)
+        .form-acciones
+          button.btn(type="button" onclick="closeModal('modal-nueva')" style="background:#95a5a6;color:white") Cancelar
+          button.btn.btn-primary(type="submit") Guardar
+
+  //- Modales Editar (uno por fila)
+  each empresa in empresas
+    div(id=`modal-edit-${empresa.id}` class="modal-overlay" style="display:none")
+      .modal-box
+        h3 Editar Empresa
+        form(method="POST" action=`/empresas/${empresa.id}/editar`)
+          .campo
+            label Razón Social
+            input(type="text" name="razonSocial" value=empresa.razonSocial required)
+          .campo
+            label CUIT
+            input(type="text" name="cuit" value=empresa.cuit required)
+          .campo
+            label Contacto
+            input(type="text" name="contacto" value=empresa.contacto required)
+          .campo
+            label Email
+            input(type="email" name="email" value=empresa.email required)
+          .campo
+            label.checkbox-label
+              input(type="checkbox" name="activa" checked=empresa.activa)
+              |  Activa
+          .form-acciones
+            button.btn(type="button" onclick=`closeModal('modal-edit-${empresa.id}')` style="background:#95a5a6;color:white") Cancelar
+            button.btn.btn-primary(type="submit") Guardar
+
+  //- Modal Eliminar (compartido)
+  #modal-delete.modal-overlay(style="display:none")
+    .modal-box
+      h3 Confirmar eliminación
+      p#delete-msg ¿Eliminar esta empresa?
+      form#delete-form(method="POST" action="")
+        .form-acciones
+          button.btn(type="button" onclick="closeModal('modal-delete')" style="background:#95a5a6;color:white") Cancelar
+          button.btn.btn-danger(type="submit") Eliminar
+
+  script.
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+    function openDeleteModal(btn) {
+      const id = btn.dataset.id;
+      const nombre = btn.dataset.nombre;
+      document.getElementById('delete-msg').textContent = '¿Eliminar "' + nombre + '"?';
+      document.getElementById('delete-form').action = '/empresas/' + id + '/eliminar';
+      openModal('modal-delete');
+    }
+    document.querySelectorAll('.modal-overlay').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        if (e.target === el) closeModal(el.id);
+      });
+    });
+

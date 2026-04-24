@@ -1,18 +1,19 @@
 extends ../layout
 
 block contenido
-  h2 Empleados
-  p
-    a.btn.btn-primary(href="/empleados/nuevo") + Nuevo Empleado
+  a.btn-back(href="/empresas")
+    i.fas.fa-arrow-left
+    |  Volver a Empresas
+  .page-header
+    h2 Empleados — #{empresa.razonSocial}
+    button.btn.btn-primary(type="button" onclick="openModal('modal-nuevo')") + Nuevo Empleado
   br
   table
     thead
       tr
-        th ID
         th Nombre
         th Apellido
         th DNI
-        th Empresa
         th Puesto
         th Salario Base
         th Activo
@@ -20,20 +21,75 @@ block contenido
     tbody
       each empleado in empleados
         tr
-          td= empleado.id
           td= empleado.nombre
           td= empleado.apellido
           td= empleado.dni
-          td= empleado.empresaNombre
           td= empleado.puesto
           td= "$" + empleado.salarioBase.toLocaleString("es-AR")
           td
             span(class="badge " + (empleado.activo ? "badge-si" : "badge-no"))= empleado.activo ? "Sí" : "No"
           td
             .acciones
-              a.btn.btn-warning(href=`/empleados/${empleado.id}/editar`) Editar
-              form(method="POST" action=`/empleados/${empleado.id}/eliminar` style="display:inline")
-                button.btn.btn-danger(type="submit" onclick="return confirm('¿Eliminar empleado?')") Eliminar
+              a.btn-icon(href=`/empresas/${empresaId}/empleados/${empleado.id}/editar` title="Editar")
+                i.fas.fa-pencil-alt
+              button.btn-icon.icon-danger(type="button" data-id=empleado.id data-nombre=`${empleado.nombre} ${empleado.apellido}` title="Eliminar" onclick="openDeleteModal(this)")
+                i.fas.fa-trash
       if empleados.length === 0
         tr
-          td(colspan="9" style="text-align:center;color:#999") No hay empleados registrados
+          td(colspan="7" style="text-align:center;color:#999") No hay empleados registrados
+
+  //- Modal Nuevo Empleado
+  #modal-nuevo.modal-overlay(style="display:none")
+    .modal-box
+      h3 Nuevo Empleado
+      form(method="POST" action=`/empresas/${empresaId}/empleados`)
+        input(type="hidden" name="empresaId" value=empresaId)
+        .campo
+          label Nombre
+          input(type="text" name="nombre" required)
+        .campo
+          label Apellido
+          input(type="text" name="apellido" required)
+        .campo
+          label DNI
+          input(type="text" name="dni" required)
+        .campo
+          label Puesto
+          input(type="text" name="puesto" required)
+        .campo
+          label Salario Base
+          input(type="number" name="salarioBase" required min="0" step="1000")
+        .form-acciones
+          button.btn(type="button" onclick="closeModal('modal-nuevo')" style="background:#95a5a6;color:white") Cancelar
+          button.btn.btn-primary(type="submit") Guardar
+
+  //- Modal Eliminar
+  #modal-delete.modal-overlay(style="display:none")
+    .modal-box
+      h3 Confirmar eliminación
+      p#delete-msg ¿Eliminar este empleado?
+      form#delete-form(method="POST" action="")
+        .form-acciones
+          button.btn(type="button" onclick="closeModal('modal-delete')" style="background:#95a5a6;color:white") Cancelar
+          button.btn.btn-danger(type="submit") Eliminar
+
+  script.
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+    function openDeleteModal(btn) {
+      const id = btn.dataset.id;
+      const nombre = btn.dataset.nombre;
+      document.getElementById('delete-msg').textContent = '¿Eliminar "' + nombre + '"?';
+      document.getElementById('delete-form').action = '/empresas/#{empresaId}/empleados/' + id + '/eliminar';
+      openModal('modal-delete');
+    }
+    document.querySelectorAll('.modal-overlay').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        if (e.target === el) closeModal(el.id);
+      });
+    });
+
