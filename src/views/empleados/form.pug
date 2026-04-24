@@ -5,6 +5,10 @@ block contenido
   .card
     form(method="POST" action=accion)
       .campo
+        label Empresa
+        input(type="text" value=empresa.razonSocial disabled style="background:#f5f5f5;color:#666")
+        input(type="hidden" name="empresaId" value=empresaId)
+      .campo
         label Nombre
         input(type="text" name="nombre" value=empleado ? empleado.nombre : "" required)
       .campo
@@ -13,12 +17,6 @@ block contenido
       .campo
         label DNI
         input(type="text" name="dni" value=empleado ? empleado.dni : "" required)
-      .campo
-        label Empresa
-        select(name="empresaId" required)
-          option(value="" disabled selected=!empleado) Seleccioná una empresa
-          each empresa in empresas
-            option(value=empresa.id selected=empleado && empleado.empresaId === empresa.id)= empresa.razonSocial
       .campo
         label Puesto
         input(type="text" name="puesto" value=empleado ? empleado.puesto : "" required)
@@ -32,4 +30,5 @@ block contenido
             | Activo
       .form-acciones
         button.btn.btn-primary(type="submit") Guardar
-        a.btn(href="/empleados" style="background:#95a5a6;color:white") Cancelar
+        a.btn(href=`/empresas/${empresaId}/empleados` style="background:#95a5a6;color:white") Cancelar
+

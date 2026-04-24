@@ -2,7 +2,6 @@ const express = require("express");
 const path = require("path");
 
 const empresaRoutes = require("./routes/empresa.routes");
-const empleadoRoutes = require("./routes/empleado.routes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,7 +17,6 @@ app.use(express.json());
 // Rutas
 app.get("/", (req, res) => res.redirect("/empresas"));
 app.use("/empresas", empresaRoutes);
-app.use("/empleados", empleadoRoutes);
 
 // 404
 app.use((req, res) => {

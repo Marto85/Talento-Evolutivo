@@ -31,5 +31,16 @@
     "salarioBase": 550000,
     "activo": true,
     "fechaIngreso": "2019-11-20"
+  },
+  {
+    "id": "epl-004",
+    "nombre": "Gaston",
+    "apellido": "Test",
+    "dni": "1123",
+    "empresaId": "emp-004",
+    "puesto": "Gerente",
+    "salarioBase": 1000000000000,
+    "activo": true,
+    "fechaIngreso": "2026-04-24"
   }
 ]
