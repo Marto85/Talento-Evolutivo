@@ -1,7 +1,7 @@
 [
   {
     "id": "epl-001",
-    "nombre": "Carlos",
+    "nombre": "Carlos2",
     "apellido": "Fernández",
     "dni": "28456789",
     "empresaId": "emp-002",
@@ -42,5 +42,16 @@
     "salarioBase": 1000000000000,
     "activo": true,
     "fechaIngreso": "2026-04-24"
+  },
+  {
+    "id": "epl-005",
+    "nombre": "Ana",
+    "apellido": "Rodríguez",
+    "dni": "35678901",
+    "empresaId": "emp-002",
+    "puesto": "Contadora",
+    "salarioBase": 480000,
+    "activo": true,
+    "fechaIngreso": "2026-04-25"
   }
 ]

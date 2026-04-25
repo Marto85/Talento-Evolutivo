@@ -3,6 +3,10 @@ extends ../layout
 block contenido
   h2= titulo
   .card
+    if locals.errores
+      .error-list
+        each e in errores
+          p= e
     form(method="POST" action=accion)
       .campo
         label Empresa

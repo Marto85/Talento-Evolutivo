@@ -41,6 +41,10 @@ block contenido
   #modal-nueva.modal-overlay(style="display:none")
     .modal-box
       h3 Nueva Empresa
+      if locals.errores && locals.modalAbierto === 'modal-nueva'
+        .error-list
+          each e in errores
+            p= e
       form(method="POST" action="/empresas")
         .campo
           label Razón Social
@@ -63,6 +67,10 @@ block contenido
     div(id=`modal-edit-${empresa.id}` class="modal-overlay" style="display:none")
       .modal-box
         h3 Editar Empresa
+        if locals.errores && locals.modalAbierto === 'modal-edit-' + empresa.id
+          .error-list
+            each e in errores
+              p= e
         form(method="POST" action=`/empresas/${empresa.id}/editar`)
           .campo
             label Razón Social
@@ -113,4 +121,6 @@ block contenido
         if (e.target === el) closeModal(el.id);
       });
     });
+    var _modalAbierto = '!{locals.modalAbierto || ""}';
+    if (_modalAbierto) openModal(_modalAbierto);
 

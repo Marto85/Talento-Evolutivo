@@ -1,0 +1,41 @@
+extends ../layout
+
+block contenido
+  a.btn-back(href=`/empresas/${empresaId}/empleados`)
+    i.fas.fa-arrow-left
+    |  Volver a empleados
+  .page-header
+    h2= empleado.nombre + " " + empleado.apellido
+  br
+  .card
+    table
+      tbody
+        tr
+          td
+            strong ID
+          td= empleado.id
+        tr
+          td
+            strong DNI
+          td= empleado.dni
+        tr
+          td
+            strong Puesto
+          td= empleado.puesto
+        tr
+          td
+            strong Salario Base
+          td= "$" + empleado.salarioBase.toLocaleString("es-AR")
+        tr
+          td
+            strong Empresa
+          td= empresa.razonSocial
+        tr
+          td
+            strong Activo
+          td
+            span(class="badge " + (empleado.activo ? "badge-si" : "badge-no"))= empleado.activo ? "Sí" : "No"
+        tr
+          td
+            strong Fecha de ingreso
+          td= empleado.fechaIngreso

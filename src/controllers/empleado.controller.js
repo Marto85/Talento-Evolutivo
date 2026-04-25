@@ -1,7 +1,18 @@
 const { leer, guardar, generarId } = require("../data/db");
 const Empleado = require("../models/Empleado");
+const { validarEmpleado } = require("../utils/validar");
 
 const crear = (req, res) => {
+  const errores = validarEmpleado(req.body);
+  if (errores) {
+    if (req.accepts('json') && !req.accepts('html')) return res.status(400).json({ errores });
+    const { empresaId } = req.params;
+    const empresas = leer("empresas");
+    const empresa = empresas.find((e) => e.id === empresaId);
+    const empleados = leer("empleados").filter((e) => e.empresaId === empresaId).map((d) => new Empleado(d));
+    return res.status(400).render("empleados/index", { empleados, empresa, empresaId, errores, modalAbierto: "modal-nuevo" });
+  }
+
   const { empresaId } = req.params;
   const empleados = leer("empleados");
   const nuevoempleado = new Empleado({
@@ -15,6 +26,24 @@ const crear = (req, res) => {
 };
 
 const actualizar = (req, res) => {
+  const errores = validarEmpleado(req.body);
+  if (errores) {
+    if (req.accepts('json') && !req.accepts('html')) return res.status(400).json({ errores });
+    const { empresaId } = req.params;
+    const empleados = leer("empleados");
+    const empresas = leer("empresas");
+    const empleado = empleados.find((e) => e.id === req.params.id);
+    const empresa = empresas.find((e) => e.id === empresaId);
+    return res.status(400).render("empleados/form", {
+      empleado,
+      empresa,
+      empresaId,
+      titulo: "Editar Empleado",
+      accion: `/empresas/${empresaId}/empleados/${req.params.id}/editar`,
+      errores,
+    });
+  }
+
   const { empresaId } = req.params;
   const empleados = leer("empleados");
   const idx = empleados.findIndex((e) => e.id === req.params.id);
@@ -39,10 +68,11 @@ const listar = (req, res) => {
   const empleadosData = leer("empleados");
   const empresas = leer("empresas");
   const empresa = empresas.find((e) => e.id === empresaId);
-  if (!empresa) return res.status(404).render("404", { mensaje: "Empresa no encontrada" });
+  if (!empresa) return res.status(404).json({ error: "Empresa no encontrada" });
   const empleados = empleadosData
     .filter((e) => e.empresaId === empresaId)
     .map((data) => new Empleado(data));
+  if (req.accepts('json') && !req.accepts('html')) return res.json(empleados);
   res.render("empleados/index", { empleados, empresa, empresaId });
 };
 
@@ -75,6 +105,19 @@ const formularioEditar = (req, res) => {
     accion: `/empresas/${empresaId}/empleados/${empleado.id}/editar`,
   });
 };
+const ver = (req, res) => {
+  const { empresaId } = req.params;
+  const empleados = leer("empleados");
+  const empresas = leer("empresas");
+  const empleado = empleados.find((e) => e.id === req.params.id && e.empresaId === empresaId);
+  if (!empleado) {
+    if (req.accepts('json') && !req.accepts('html')) return res.status(404).json({ error: "Empleado no encontrado" });
+    return res.status(404).render("404", { mensaje: "Empleado no encontrado" });
+  }
+  const empresa = empresas.find((e) => e.id === empresaId);
+  if (req.accepts('json') && !req.accepts('html')) return res.json(empleado);
+  res.render("empleados/detail", { empleado, empresa, empresaId });
+};
 
 
-module.exports = { crear, actualizar, eliminar, listar, formularioNuevo, formularioEditar};
+module.exports = { crear, actualizar, eliminar, listar, ver, formularioNuevo, formularioEditar};

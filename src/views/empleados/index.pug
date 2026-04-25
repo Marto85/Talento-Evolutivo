@@ -42,6 +42,10 @@ block contenido
   #modal-nuevo.modal-overlay(style="display:none")
     .modal-box
       h3 Nuevo Empleado
+      if locals.errores && locals.modalAbierto === 'modal-nuevo'
+        .error-list
+          each e in errores
+            p= e
       form(method="POST" action=`/empresas/${empresaId}/empleados`)
         input(type="hidden" name="empresaId" value=empresaId)
         .campo
@@ -92,4 +96,6 @@ block contenido
         if (e.target === el) closeModal(el.id);
       });
     });
+    var _modalAbierto = '!{locals.modalAbierto || ""}';
+    if (_modalAbierto) openModal(_modalAbierto);
 

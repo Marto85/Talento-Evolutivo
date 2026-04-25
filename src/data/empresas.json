@@ -1,11 +1,11 @@
 [
   {
     "id": "emp-002",
-    "razonSocial": "Textil Pampeana S.R.L.",
-    "cuit": "30-98765432-1",
-    "contacto": "María López",
-    "email": "mlopez@textilpampeana.com",
-    "activa": true,
+    "razonSocial": "Constructora Norte S.A.",
+    "cuit": "30-12345678-9",
+    "contacto": "Juan Pérez",
+    "email": "juan@constructoranorte.com",
+    "activa": false,
     "fechaAlta": "2023-03-10"
   },
   {
@@ -25,5 +25,14 @@
     "email": "tarufetti@cochabamba.com",
     "activa": true,
     "fechaAlta": "2026-04-21"
+  },
+  {
+    "id": "emp-005",
+    "razonSocial": "Constructora SUR S.A.",
+    "cuit": "30-12345678-9",
+    "contacto": "Juan Pérez",
+    "email": "juan@constructorasur.com",
+    "activa": true,
+    "fechaAlta": "2026-04-25"
   }
 ]
