@@ -1,0 +1,42 @@
+extends ../layout
+
+block contenido
+  a.btn-back(href="/empresas")
+    i.fas.fa-arrow-left
+    |  Volver a Empresas
+  .page-header
+    h2= empresa.razonSocial
+    a.btn.btn-primary(href=`/empresas/${empresa.id}/empleados`) Ver empleados
+  br
+  .card
+    table
+      tbody
+        tr
+          td
+            strong ID
+          td= empresa.id
+        tr
+          td
+            strong CUIT
+          td= empresa.cuit
+        tr
+          td
+            strong Contacto
+          td= empresa.contacto
+        tr
+          td
+            strong Email
+          td= empresa.email
+        tr
+          td
+            strong Activa
+          td
+            span(class="badge " + (empresa.activa ? "badge-si" : "badge-no"))= empresa.activa ? "Sí" : "No"
+        tr
+          td
+            strong Fecha de alta
+          td= empresa.fechaAlta
+        tr
+          td
+            strong Empleados
+          td= empresa.cantidadEmpleados
