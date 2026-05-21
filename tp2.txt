@@ -1,0 +1,69 @@
+Proyecto de Backend 2 Parcial
+Producto mínimo viable
+Introducción
+Este proyecto abarca los contenidos vistos hasta el primer parcial de la materia de
+Desarrollo Web Backend de la carrera de programación. Debe realizarse en los mismos
+grupos (de 3 a 5 personas de la misma comisión). Se enfocará en la creación de una
+aplicación web utilizando Node.js y Express, con una estructura de archivos, carpetas
+coherente al desarrollo y una base de datos en MONGO.
+Objetivos específicos:
+1. Implementar una arquitectura modular y organizada.
+2. Integrar una base de datos MongoDB utilizando Mongoose..
+3. Utilizar middlewares, rutas, controladores y manejo de errores.
+4. Implementar validaciones simples.
+5. Utilizar programación asincrónica con async/await.
+6. Documentar correctamente el desarrollo del proyecto.
+Objetivos generales:
+● Desarrollar software por encargo
+● Integrar equipos de proyecto para el desarrollo
+● Liderar grupos de trabajo y asumir roles especializados.
+● Desempeñarse de manera autónoma en el desarrollo de sistemas de baja
+complejidad.
+● Avanzar en la documentación, aprovechar los requerimientos funcionales y no
+funcionales de Ingeniería, desarrollar en la documentación correspondiente.
+Criterios de Evaluación
+El proyecto será evaluado en base a los siguientes criterios:
+1. Funcionalidad: La aplicación debe cumplir con todos los requisitos funcionales
+establecidos. No extender el proyecto a más de lo solicitado, los módulos a evaluar
+Se evaluará de acuerdo a los contenidos vistos a la fecha.
+Como desarrolladores, en un entorno profesional no se evalúa únicamente la
+incorporación de más funcionalidades o tecnologías, sino principalmente la
+capacidad de cumplir correctamente con los requerimientos y objetivos planteados
+para cada proyecto.
+En cada etapa de la cursada, la evaluación se encuentra orientada específicamente
+a los contenidos, enfoques y herramientas trabajadas en clase, independientemente
+de los conocimientos adicionales que cada estudiante pueda poseer o investigar de
+manera autónoma.
+El objetivo de los dos parciales de la cátedra no es incorporar todavía arquitecturas o
+herramientas más avanzadas, sino demostrar comprensión, aplicación correcta y
+fundamentada de los contenidos solicitados para esta instancia formativa. En la
+tercera etapa se tendrá mayor libertad sobre eso.
+2. Código:El código debe estar correctamente estructurado y seguir buenas prácticas
+de desarrollo, manteniendo coherencia técnica y organizacional dentro del proyecto.
+La aplicación deberá ser probada adecuadamente y las pruebas realizadas deberán
+encontrarse documentadas.
+Asimismo, se valorará especialmente la capacidad de cumplir correctamente con los
+requerimientos y objetivos planteados para la instancia, respetando el alcance
+definido y siguiendo criterios de trabajo similares a los utilizados en entornos
+profesionales de desarrollo.
+Recordemos que, en la industria del software, no siempre incorporar más
+funcionalidades, arquitecturas o tecnologías implica una mejora del proyecto. Existe
+un concepto ampliamente conocido como overengineering, que refiere a la
+incorporación de complejidad innecesaria dentro de una solución. En muchos casos,
+esto dificulta el mantenimiento, la comprensión y la correcta evaluación del sistema,
+transformándose en un problema más que en una ventaja.
+3. Documentación: Hacer un documento. Deben colocar la bibliografía utilizada
+(Tutoriales, Libros, Videos). Deben poner las responsabilidades de cada uno de los
+estudiantes en el desarrollo del mismo. Explicar el funcionamiento de la aplicación.
+Los roles deben ser especificados que hizo cada uno y grabar un pequeño video
+explicando cada uno de ellos. Si quieren aprovechar contenido de otra materia en
+cuanto a documentación, no hay problema.
+4. Entrega: La documentación del proyecto debe ser clara y completa en un PDF
+adjunto al trabajo deben subir el link del Drive y debe haber un único documento en
+el drive que incluya los links (GIT, si hay diagramas a los mismos, etc). Deben
+realizar un video sobre la explicación del código con MONGO, pueden aprovechar a
+grabarlo en un meet o zoom y adjuntar el link en el documento (Drive, Youtube, etc)
+con los permisos correspondientes para visualizarlo. No es necesario una edición.
+En caso de ser necesario se contactará con los estudiantes a fin de evacuar dudas.
+Cada estudiante debe ser responsable de la entrega individual del trabajo con
+su usuario del campus con el link al drive

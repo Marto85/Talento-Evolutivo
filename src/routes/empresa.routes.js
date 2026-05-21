@@ -5,7 +5,9 @@ const empleadoRoutes = require("./empleado.routes");
 const router = Router();
 
 router.get("/", ctrl.listar);
+router.get("/nueva", ctrl.formularioNueva);
 router.get("/:id", ctrl.ver);
+router.get("/:id/editar", ctrl.formularioEditar);
 router.post("/", ctrl.crear);
 router.post("/:id/editar", ctrl.actualizar);
 router.post("/:id/eliminar", ctrl.eliminar);
