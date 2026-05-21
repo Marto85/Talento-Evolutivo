@@ -37,7 +37,7 @@ const crear = async (req, res, next) => {
     if (errores) {
       if (req.accepts("json") && !req.accepts("html")) return res.status(400).json({ errores });
       const empresas = await buildEmpresaList();
-      return res.status(400).render("empresas/index", { empresas, errores, modalAbierto: "modal-nueva" });
+      return res.status(400).render("empresas/index", { empresas, errores, modalAbierto: "modal-nueva", empresa: req.body });
     }
 
     const empresa = new Empresa(req.body);
@@ -58,7 +58,7 @@ const actualizar = async (req, res, next) => {
     if (errores) {
       if (req.accepts("json") && !req.accepts("html")) return res.status(400).json({ errores });
       const empresas = await buildEmpresaList();
-      return res.status(400).render("empresas/index", { empresas, errores, modalAbierto: `modal-edit-${req.params.id}` });
+      return res.status(400).render("empresas/index", { empresas, errores, modalAbierto: `modal-edit-${req.params.id}`, empresa: { ...req.body, id: req.params.id, _id: req.params.id } });
     }
 
     const activa = req.body.activa === "on";

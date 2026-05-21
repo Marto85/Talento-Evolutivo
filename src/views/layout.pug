@@ -58,3 +58,31 @@ html(lang="es")
       a(href="/empresas") Empresas
     main
       block contenido
+    script.
+      document.addEventListener('DOMContentLoaded', () => {
+        const cuitInputs = document.querySelectorAll('input[name="cuit"]');
+        cuitInputs.forEach(input => {
+          input.setAttribute('maxlength', '13');
+          input.addEventListener('input', function(e) {
+            // Limpia todo lo que no sea número y corta estrictamente a 11 dígitos
+            let val = this.value.replace(/\D/g, '').substring(0, 11);
+            let formatted = val;
+            
+            // Aplica los guiones automáticamente
+            if (val.length > 2 && val.length <= 10) {
+              formatted = val.substring(0, 2) + '-' + val.substring(2);
+            } else if (val.length > 10) {
+              formatted = val.substring(0, 2) + '-' + val.substring(2, 10) + '-' + val.substring(10);
+            }
+            this.value = formatted;
+            
+            // Frena el formulario si no está completo (así no se borran los datos)
+            const cuitRegex = /^\d{2}-\d{7,8}-\d{1}$/;
+            if (this.value && !cuitRegex.test(this.value)) {
+              this.setCustomValidity("El CUIT debe estar completo (ej: 30-12345678-9)");
+            } else {
+              this.setCustomValidity(""); // CUIT válido, quita el error
+            }
+          });
+        });
+      });
