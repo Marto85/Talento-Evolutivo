@@ -82,36 +82,35 @@ html(lang="es")
         p.page-loader-text Procesando...
     script.
       document.addEventListener('DOMContentLoaded', () => {
-        const authRequired = document.body.dataset.authRequired !== 'false';
         const authPage = document.body.dataset.authPage === 'true';
         const pageLoader = document.getElementById('page-loader');
         const logoutButton = document.getElementById('logout-button');
         let isSubmitting = false;
 
-        const isLogged = () => localStorage.getItem('isLogged') === 'true';
-
         const syncAuthUi = () => {
           if (!logoutButton) return;
-          logoutButton.style.display = authPage ? 'none' : (isLogged() ? 'inline-flex' : 'none');
+          logoutButton.style.display = authPage ? 'none' : 'inline-flex';
         };
-
-        if (authRequired && !isLogged()) {
-          window.location.replace('/login');
-          return;
-        }
-
-        if (authPage && isLogged()) {
-          window.location.replace('/empresas');
-          return;
-        }
 
         syncAuthUi();
 
         if (logoutButton) {
-          logoutButton.addEventListener('click', () => {
-            localStorage.removeItem('isLogged');
-            localStorage.removeItem('loggedUser');
-            window.location.replace('/login');
+          logoutButton.addEventListener('click', async () => {
+            try {
+              await fetch('/logout', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              });
+            } catch (error) {
+            } finally {
+              localStorage.removeItem('isLogged');
+              localStorage.removeItem('loggedUser');
+              localStorage.removeItem('authToken');
+              window.location.replace('/login');
+            }
           });
         }
 

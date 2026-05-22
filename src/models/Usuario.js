@@ -13,6 +13,11 @@ const usuarioSchema = new mongoose.Schema(
       required: [true, "password es obligatorio"],
       trim: true,
     },
+    token: {
+      type: String,
+      trim: true,
+      default: null,
+    },
   },
   { timestamps: true }
 );

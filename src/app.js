@@ -1,7 +1,10 @@
 require("dotenv").config();
 const express = require("express");
+const session = require("express-session");
 const path = require("path");
 const { connectDB } = require("./config/database");
+const { passport } = require("./config/passport");
+const { requireAuth } = require("./middlewares/auth.middleware");
 const errorHandler = require("./middlewares/errorHandler");
 
 const authRoutes = require("./routes/auth.routes");
@@ -17,11 +20,25 @@ app.set("views", path.join(__dirname, "views"));
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "talento-evolutivo-session-secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 8,
+    },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Rutas
 app.get("/", (req, res) => res.redirect("/login"));
 app.use(authRoutes);
-app.use("/empresas", empresaRoutes);
+app.use("/empresas", requireAuth, empresaRoutes);
 
 // 404
 app.use((req, res) => {

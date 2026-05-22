@@ -1,7 +1,5 @@
 const Usuario = require("../models/Usuario");
-
-const DEFAULT_AUTH_USER = process.env.AUTH_USER;
-const DEFAULT_AUTH_PASSWORD = process.env.AUTH_PASSWORD;
+const { passport, ensureDefaultUser } = require("../config/passport");
 
 const renderLogin = (res, options = {}) => {
   res.render("auth/login", {
@@ -13,46 +11,39 @@ const renderLogin = (res, options = {}) => {
   });
 };
 
-const ensureDefaultUser = async () => {
-  const usuarios = await Usuario.estimatedDocumentCount();
-  if (usuarios > 0) return;
-
-  await Usuario.create({
-    user: DEFAULT_AUTH_USER,
-    password: DEFAULT_AUTH_PASSWORD,
-  });
-};
-
 const mostrarLogin = async (req, res, next) => {
   try {
     await ensureDefaultUser();
+
+    if (req.isAuthenticated && req.isAuthenticated()) return res.redirect("/empresas");
+
     renderLogin(res);
   } catch (error) {
     next(error);
   }
 };
 
-const login = async (req, res, next) => {
-  try {
-    await ensureDefaultUser();
+const login = (req, res, next) => {
+  passport.authenticate("local", (error, authUser, info) => {
+    if (error) return next(error);
 
-    const user = String(req.body.user || "").trim();
-    const password = String(req.body.password || "").trim();
+    const attemptedUser = String(req.body.user || "").trim();
 
-    const usuario = await Usuario.findOne({ user, password });
-
-    if (!usuario) {
+    if (!authUser) {
       return res.status(401).render("auth/login", {
         authPage: true,
         authRequired: false,
-        error: "Usuario o password incorrectos",
-        lastUser: user,
+        error: info?.message || "Usuario o password incorrectos",
+        lastUser: attemptedUser,
       });
     }
 
-    const safeUser = JSON.stringify(usuario.user);
+    req.logIn(authUser, (loginError) => {
+      if (loginError) return next(loginError);
 
-    return res.send(`<!doctype html>
+      const safeUser = JSON.stringify(authUser.user);
+
+      return res.send(`<!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8">
@@ -68,9 +59,29 @@ const login = async (req, res, next) => {
     </script>
   </body>
 </html>`);
+    });
+  })(req, res, next);
+};
+
+const logout = async (req, res, next) => {
+  try {
+    if (req.user?.id) {
+      await Usuario.findByIdAndUpdate(req.user.id, { token: null });
+    }
+
+    req.logout((logoutError) => {
+      if (logoutError) return next(logoutError);
+
+      req.session.destroy((sessionError) => {
+        if (sessionError) return next(sessionError);
+
+        res.clearCookie("connect.sid");
+        return res.status(200).json({ ok: true });
+      });
+    });
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = { mostrarLogin, login };
+module.exports = { mostrarLogin, login, logout };

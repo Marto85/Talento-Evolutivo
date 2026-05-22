@@ -5,5 +5,6 @@ const router = Router();
 
 router.get("/login", ctrl.mostrarLogin);
 router.post("/login", ctrl.login);
+router.post("/logout", ctrl.logout);
 
 module.exports = router;
