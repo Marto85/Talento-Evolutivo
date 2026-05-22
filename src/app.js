@@ -4,6 +4,7 @@ const path = require("path");
 const { connectDB } = require("./config/database");
 const errorHandler = require("./middlewares/errorHandler");
 
+const authRoutes = require("./routes/auth.routes");
 const empresaRoutes = require("./routes/empresa.routes");
 
 const app = express();
@@ -18,7 +19,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Rutas
-app.get("/", (req, res) => res.redirect("/empresas"));
+app.get("/", (req, res) => res.redirect("/login"));
+app.use(authRoutes);
 app.use("/empresas", empresaRoutes);
 
 // 404

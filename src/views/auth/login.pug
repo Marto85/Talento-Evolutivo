@@ -1,0 +1,19 @@
+extends ../layout
+
+block contenido
+  .login-shell
+    .card.login-card
+      h2 Iniciar sesión
+      p.login-copy Ingresá con tu usuario y password para administrar Talento Evolutivo.
+      if error
+        .error-list
+          p= error
+      form(method="POST" action="/login")
+        .campo
+          label Usuario
+          input(type="text" name="user" value=lastUser required autofocus)
+        .campo
+          label Password
+          input(type="password" name="password" required)
+        .form-acciones
+          button.btn.btn-primary(type="submit") Ingresar

@@ -11,10 +11,12 @@ html(lang="es")
       body { font-family: 'Poppins', Arial, sans-serif; background: #f5f5f5; color: #333; }
       header { background: #2c3e50; color: white; padding: 15px 30px; }
       header h1 { font-size: 1.2rem; }
+      .header-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
       nav { background: #34495e; padding: 0 30px; }
       nav a { display: inline-block; color: #ecf0f1; padding: 12px 16px; text-decoration: none; font-size: 0.9rem; }
       nav a:hover { background: #2c3e50; }
       main { padding: 30px; max-width: 1000px; margin: 0 auto; }
+      .auth-main { min-height: calc(100vh - 90px); display: flex; align-items: center; justify-content: center; }
       h2 { margin-bottom: 20px; color: #2c3e50; }
       table { width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
       th { background: #2c3e50; color: white; padding: 12px 15px; text-align: left; font-size: 0.85rem; }
@@ -32,7 +34,7 @@ html(lang="es")
       .card { background: white; padding: 25px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); max-width: 500px; }
       .campo { margin-bottom: 16px; }
       label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: #555; }
-      input[type=text], input[type=email], input[type=number], select { width: 100%; padding: 9px 11px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+      input[type=text], input[type=email], input[type=number], input[type=password], select { width: 100%; padding: 9px 11px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
       input:focus, select:focus { outline: none; border-color: #2980b9; }
       .checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 0.9rem; }
       .form-acciones { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
@@ -51,6 +53,9 @@ html(lang="es")
       .btn-back:hover { color: #2c3e50; }
       .error-list { background: #fadbd8; border-left: 3px solid #e74c3c; padding: 10px 14px; border-radius: 4px; margin-bottom: 16px; }
       .error-list p { color: #922b21; font-size: 0.85rem; margin: 2px 0; }
+      .login-shell { width: 100%; display: flex; justify-content: center; }
+      .login-card { width: 100%; max-width: 420px; }
+      .login-copy { font-size: 0.92rem; color: #666; margin-bottom: 18px; }
       .page-loader { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(255,255,255,0.82); backdrop-filter: blur(2px); z-index: 2000; }
       .page-loader.is-visible { display: flex; }
       .page-loader-box { min-width: 220px; padding: 22px 26px; border-radius: 10px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.16); text-align: center; }
@@ -60,12 +65,16 @@ html(lang="es")
       body.loading .btn,
       body.loading .btn-icon { pointer-events: none; opacity: 0.7; }
       @keyframes spin { to { transform: rotate(360deg); } }
-  body
+  body(data-auth-required=locals.authRequired === false ? "false" : "true" data-auth-page=locals.authPage ? "true" : "false")
     header
-      h1 Talento Evolutivo S.A. — Sistema de Gestión de Haberes
-    nav
-      a(href="/empresas") Empresas
-    main
+      .header-bar
+        h1 Talento Evolutivo S.A. — Sistema de Gestión de Haberes
+        if !locals.authPage
+          button#logout-button.btn(type="button" style="background:#c0392b;color:white") Logout
+    if !locals.authPage
+      nav
+        a(href="/empresas") Empresas
+    main(class=locals.authPage ? "auth-main" : "")
       block contenido
     #page-loader.page-loader(aria-hidden="true")
       .page-loader-box
@@ -73,8 +82,38 @@ html(lang="es")
         p.page-loader-text Procesando...
     script.
       document.addEventListener('DOMContentLoaded', () => {
+        const authRequired = document.body.dataset.authRequired !== 'false';
+        const authPage = document.body.dataset.authPage === 'true';
         const pageLoader = document.getElementById('page-loader');
+        const logoutButton = document.getElementById('logout-button');
         let isSubmitting = false;
+
+        const isLogged = () => localStorage.getItem('isLogged') === 'true';
+
+        const syncAuthUi = () => {
+          if (!logoutButton) return;
+          logoutButton.style.display = authPage ? 'none' : (isLogged() ? 'inline-flex' : 'none');
+        };
+
+        if (authRequired && !isLogged()) {
+          window.location.replace('/login');
+          return;
+        }
+
+        if (authPage && isLogged()) {
+          window.location.replace('/empresas');
+          return;
+        }
+
+        syncAuthUi();
+
+        if (logoutButton) {
+          logoutButton.addEventListener('click', () => {
+            localStorage.removeItem('isLogged');
+            localStorage.removeItem('loggedUser');
+            window.location.replace('/login');
+          });
+        }
 
         const showPageLoader = () => {
           if (!pageLoader) return;
