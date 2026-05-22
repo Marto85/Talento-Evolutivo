@@ -26,7 +26,7 @@ block contenido
         input(type="text" name="puesto" value=empleado ? empleado.puesto : "" required)
       .campo
         label Salario Base
-        input(type="number" name="salarioBase" value=empleado ? empleado.salarioBase : "" required min="0" step="1000")
+        input(type="number" name="salarioBase" value=empleado ? empleado.salarioBase : "" required min="0")
       if empleado
         .campo
           label.checkbox-label
