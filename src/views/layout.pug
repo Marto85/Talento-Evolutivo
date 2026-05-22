@@ -51,6 +51,15 @@ html(lang="es")
       .btn-back:hover { color: #2c3e50; }
       .error-list { background: #fadbd8; border-left: 3px solid #e74c3c; padding: 10px 14px; border-radius: 4px; margin-bottom: 16px; }
       .error-list p { color: #922b21; font-size: 0.85rem; margin: 2px 0; }
+      .page-loader { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(255,255,255,0.82); backdrop-filter: blur(2px); z-index: 2000; }
+      .page-loader.is-visible { display: flex; }
+      .page-loader-box { min-width: 220px; padding: 22px 26px; border-radius: 10px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.16); text-align: center; }
+      .page-loader-spinner { width: 38px; height: 38px; margin: 0 auto 12px; border-radius: 50%; border: 4px solid #d6eaf8; border-top-color: #2980b9; animation: spin 0.75s linear infinite; }
+      .page-loader-text { font-size: 0.95rem; color: #2c3e50; font-weight: 600; }
+      body.loading { cursor: progress; }
+      body.loading .btn,
+      body.loading .btn-icon { pointer-events: none; opacity: 0.7; }
+      @keyframes spin { to { transform: rotate(360deg); } }
   body
     header
       h1 Talento Evolutivo S.A. — Sistema de Gestión de Haberes
@@ -58,8 +67,33 @@ html(lang="es")
       a(href="/empresas") Empresas
     main
       block contenido
+    #page-loader.page-loader(aria-hidden="true")
+      .page-loader-box
+        .page-loader-spinner
+        p.page-loader-text Procesando...
     script.
       document.addEventListener('DOMContentLoaded', () => {
+        const pageLoader = document.getElementById('page-loader');
+        let isSubmitting = false;
+
+        const showPageLoader = () => {
+          if (!pageLoader) return;
+          pageLoader.classList.add('is-visible');
+          pageLoader.setAttribute('aria-hidden', 'false');
+          document.body.classList.add('loading');
+        };
+
+        const hidePageLoader = () => {
+          if (!pageLoader) return;
+          pageLoader.classList.remove('is-visible');
+          pageLoader.setAttribute('aria-hidden', 'true');
+          document.body.classList.remove('loading');
+          isSubmitting = false;
+          document.querySelectorAll('form button[type="submit"], form input[type="submit"]').forEach((control) => {
+            control.disabled = false;
+          });
+        };
+
         const cuitInputs = document.querySelectorAll('input[name="cuit"]');
         cuitInputs.forEach(input => {
           input.setAttribute('maxlength', '13');
@@ -85,4 +119,23 @@ html(lang="es")
             }
           });
         });
+
+        document.querySelectorAll('form').forEach((form) => {
+          form.addEventListener('submit', (event) => {
+            if ((form.method || '').toLowerCase() === 'get') return;
+            if (!form.checkValidity()) return;
+            if (isSubmitting) {
+              event.preventDefault();
+              return;
+            }
+
+            isSubmitting = true;
+            form.querySelectorAll('button[type="submit"], input[type="submit"]').forEach((control) => {
+              control.disabled = true;
+            });
+            showPageLoader();
+          });
+        });
+
+        window.addEventListener('pageshow', hidePageLoader);
       });
