@@ -1,13 +1,13 @@
 # Talento Evolutivo S.A. — Sistema de Gestión de Haberes
 
-Aplicación web para la gestión de empresas y empleados, desarrollada con Node.js y Express. Permite registrar empresas, asociarles empleados y administrar la información básica de cada uno.
+Aplicación web para la gestión de empresas y empleados, desarrollada con Node.js y Express. Este proyecto corresponde al segundo parcial de la materia Desarrollo Web Backend, integrando una arquitectura modular, persistencia en base de datos y un sistema de autenticación.
 
 ## Tecnologías
 
-- Node.js
-- Express 4
-- MongoDB con Mongoose
-- Pug (motor de plantillas)
+- **Entorno y Framework:** Node.js, Express 4
+- **Base de Datos:** MongoDB con ODM Mongoose
+- **Motor de Plantillas:** Pug
+- **Autenticación:** Passport.js y Express-Session
 
 ## Instalación
 
@@ -30,6 +30,7 @@ Crea un archivo `.env` en la raíz del proyecto:
 MONGODB_URI=mongodb+srv://usuario:contraseña@cluster.mongodb.net/talento-evolutivo?retryWrites=true&w=majority
 PORT=3000
 NODE_ENV=development
+SESSION_SECRET=tu_secreto_seguro_para_sesiones
 ```
 
 ## Uso
@@ -49,16 +50,21 @@ El servidor inicia en `http://localhost:3000`.
 src/
 ├── app.js                  # Aplicación principal
 ├── config/
-│   └── database.js        # Conexión a MongoDB
+│   ├── database.js        # Conexión a MongoDB
+│   └── passport.js        # Estrategias de autenticación
 ├── controllers/
+│   ├── auth.controller.js
 │   ├── empresa.controller.js
 │   └── empleado.controller.js
 ├── middlewares/
+│   ├── auth.middleware.js # Protección de rutas
 │   └── errorHandler.js    # Manejo centralizado de errores
 ├── models/
+│   ├── Usuario.js         # Schema de Mongoose para Login
 │   ├── Empresa.js         # Schema de Mongoose
 │   └── Empleado.js        # Schema de Mongoose
 ├── routes/
+│   ├── auth.routes.js
 │   ├── empresa.routes.js
 │   └── empleado.routes.js
 ├── utils/
@@ -66,6 +72,8 @@ src/
 └── views/
     ├── layout.pug
     ├── 404.pug
+    ├── auth/
+    │   └── login.pug
     ├── empresas/
     │   ├── index.pug
     │   ├── form.pug
@@ -79,6 +87,13 @@ src/
 ## Rutas disponibles
 
 ### Empresas
+
+| Método | Ruta                   | Descripción           |
+|--------|------------------------|-----------------------|
+| GET    | /login                 | Listar todas          |
+| POST   | /login                 | Formulario de alta    |
+| POST   | /logout                | Crear empresa         |
+
 
 | Método | Ruta                   | Descripción           |
 |--------|------------------------|-----------------------|
@@ -104,11 +119,13 @@ src/
 
 ## Características
 
-✅ **Arquitectura Modular**: Separación clara de responsabilidades (Models, Controllers, Routes)  
-✅ **Base de Datos MongoDB**: Integración con Mongoose para esquemas validados  
-✅ **Validaciones**: Validaciones tanto en cliente como en servidor  
-✅ **Programación Asincrónica**: Uso de async/await en toda la aplicación  
-✅ **Manejo de Errores**: Middleware centralizado para gestión de errores  
+Características y Mejoras Implementadas
+✅ **Autenticación**: Implementación de Passport.js con sesiones y protección de rutas.
+✅ **Base de Datos MongoDB**: Migración de archivos JSON estáticos a MongoDB integrado con Mongoose.
+✅ **Arquitectura Modular**: Separación clara de responsabilidades (Models, Controllers, Routes, Middlewares).
+✅ **Programación Asincrónica**: Uso de async/await en toda la aplicación.
+✅ **Manejo de Errores y Validaciones**: Middleware centralizado para captura de errores y validaciones de Schemas robustas (formatos de CUIT, DNI, Email).
+✅ **Relaciones**: Vínculos entre Empresas y Empleados, incluyendo eliminación en cascada.
 ✅ **API JSON**: Soporte para requests JSON además de HTML  
 ✅ **Vistas Pug**: Motor de plantillas para renderizado server-side  
 
@@ -127,22 +144,10 @@ src/
 - **puesto**: Obligatorio, no vacío
 - **salarioBase**: Obligatorio, número >= 0
 
-## Mejoras Implementadas
-
-- ✅ Migración de JSON a MongoDB con Mongoose
-- ✅ Implementación de async/await en controladores
-- ✅ Manejo centralizado de errores con middleware
-- ✅ Validaciones a nivel de schema
-- ✅ Relaciones entre Empresas y Empleados
-- ✅ Eliminación en cascada (empresas → empleados)
-- ✅ Soporte para respuestas JSON
-
-## Desarrolladores
-
-Para contribuir al proyecto, asegúrate de:
-1. Mantener la estructura modular
-2. Usar async/await en operaciones asincrónicas
-3. Validar inputs antes de guardar a BD
-4. Agregar errores al middleware de error
-
+Integrantes del Grupo
+Gaston Zampar
+Martin Juan
+Santiago Cuda
+Adrián Madroñal
+Nicolás Luciano Rolón Sironi
 ---
