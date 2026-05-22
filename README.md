@@ -146,5 +146,3 @@ Para contribuir al proyecto, asegúrate de:
 4. Agregar errores al middleware de error
 
 ---
-
-Para más detalles sobre la configuración de MongoDB, ver `MONGODB_SETUP.md`.
