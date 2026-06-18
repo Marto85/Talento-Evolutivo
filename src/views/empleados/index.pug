@@ -47,6 +47,7 @@ block contenido
           each e in errores
             p= e
       form(method="POST" action=`/empresas/${empresaId}/empleados`)
+        input(type="hidden" name="_csrf" value=csrfToken)
         input(type="hidden" name="empresaId" value=empresaId)
         .campo
           label Nombre
@@ -73,6 +74,7 @@ block contenido
       h3 Confirmar eliminación
       p#delete-msg ¿Eliminar este empleado?
       form#delete-form(method="POST" action="")
+        input(type="hidden" name="_csrf" value=csrfToken)
         .form-acciones
           button.btn(type="button" onclick="closeModal('modal-delete')" style="background:#95a5a6;color:white") Cancelar
           button.btn.btn-danger(type="submit") Eliminar

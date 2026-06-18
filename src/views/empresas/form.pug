@@ -4,6 +4,7 @@ block contenido
   h2= titulo
   .card
     form(method="POST" action=accion)
+      input(type="hidden" name="_csrf" value=csrfToken)
       .campo
         label Razón Social
         input(type="text" name="razonSocial" value=empresa ? empresa.razonSocial : "" required)

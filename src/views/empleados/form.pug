@@ -8,6 +8,7 @@ block contenido
         each e in errores
           p= e
     form(method="POST" action=accion)
+      input(type="hidden" name="_csrf" value=csrfToken)
       .campo
         label Empresa
         input(type="text" value=empresa.razonSocial disabled style="background:#f5f5f5;color:#666")

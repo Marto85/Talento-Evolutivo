@@ -3,8 +3,10 @@ const express = require("express");
 const session = require("express-session");
 const path = require("path");
 const { connectDB } = require("./config/database");
+const { MongoSessionStore } = require("./config/sessionStore");
 const { passport } = require("./config/passport");
 const { requireAuth } = require("./middlewares/auth.middleware");
+const { csrfProtection } = require("./middlewares/csrf.middleware");
 const errorHandler = require("./middlewares/errorHandler");
 
 const authRoutes = require("./routes/auth.routes");
@@ -12,6 +14,20 @@ const empresaRoutes = require("./routes/empresa.routes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === "production";
+
+if (isProduction) app.set("trust proxy", 1);
+
+const getSessionSecret = () => {
+  if (process.env.SESSION_SECRET) return process.env.SESSION_SECRET;
+
+  if (isProduction) {
+    throw new Error("SESSION_SECRET es obligatorio en produccion");
+  }
+
+  console.warn("Advertencia: usando SESSION_SECRET de desarrollo. Configuralo en .env para mayor seguridad.");
+  return "talento-evolutivo-session-secret";
+};
 
 // Motor de vistas Pug
 app.set("view engine", "pug");
@@ -22,16 +38,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "talento-evolutivo-session-secret",
+    secret: getSessionSecret(),
+    store: new MongoSessionStore(),
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
+      secure: isProduction,
       sameSite: "lax",
       maxAge: 1000 * 60 * 60 * 8,
     },
   })
 );
+app.use(csrfProtection);
 app.use(passport.initialize());
 app.use(passport.session());
 

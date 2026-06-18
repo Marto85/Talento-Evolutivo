@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const Usuario = require("../models/Usuario");
+const { hashPassword, isPasswordHash, verifyPassword } = require("../utils/password");
 
 const DEFAULT_AUTH_USER = process.env.AUTH_USER || "admin";
 const DEFAULT_AUTH_PASSWORD = process.env.AUTH_PASSWORD || "admin";
@@ -12,7 +13,7 @@ const ensureDefaultUser = async () => {
 
   await Usuario.create({
     user: DEFAULT_AUTH_USER,
-    password: DEFAULT_AUTH_PASSWORD,
+    password: await hashPassword(DEFAULT_AUTH_PASSWORD),
   });
 };
 
@@ -30,10 +31,14 @@ passport.use(
 
         const normalizedUser = String(user || "").trim();
         const normalizedPassword = String(password || "").trim();
-        const usuario = await Usuario.findOne({ user: normalizedUser, password: normalizedPassword });
+        const usuario = await Usuario.findOne({ user: normalizedUser });
 
-        if (!usuario) {
+        if (!usuario || !(await verifyPassword(normalizedPassword, usuario.password))) {
           return done(null, false, { message: "Usuario o password incorrectos" });
+        }
+
+        if (!isPasswordHash(usuario.password)) {
+          usuario.password = await hashPassword(normalizedPassword);
         }
 
         usuario.token = generarToken();

@@ -46,6 +46,7 @@ block contenido
           each e in errores
             p= e
       form(method="POST" action="/empresas")
+        input(type="hidden" name="_csrf" value=csrfToken)
         .campo
           label Razón Social
           input(type="text" name="razonSocial" required)
@@ -72,6 +73,7 @@ block contenido
             each e in errores
               p= e
         form(method="POST" action=`/empresas/${empresa.id}/editar`)
+          input(type="hidden" name="_csrf" value=csrfToken)
           .campo
             label Razón Social
             input(type="text" name="razonSocial" value=empresa.razonSocial required)
@@ -98,6 +100,7 @@ block contenido
       h3 Confirmar eliminación
       p#delete-msg ¿Eliminar esta empresa?
       form#delete-form(method="POST" action="")
+        input(type="hidden" name="_csrf" value=csrfToken)
         .form-acciones
           button.btn(type="button" onclick="closeModal('modal-delete')" style="background:#95a5a6;color:white") Cancelar
           button.btn.btn-danger(type="submit") Eliminar

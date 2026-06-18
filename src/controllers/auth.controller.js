@@ -38,12 +38,15 @@ const login = (req, res, next) => {
       });
     }
 
-    req.logIn(authUser, (loginError) => {
-      if (loginError) return next(loginError);
+    req.session.regenerate((sessionError) => {
+      if (sessionError) return next(sessionError);
 
-      const safeUser = JSON.stringify(authUser.user);
+      req.logIn(authUser, (loginError) => {
+        if (loginError) return next(loginError);
 
-      return res.send(`<!doctype html>
+        const safeUser = JSON.stringify(authUser.user);
+
+        return res.send(`<!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8">
@@ -59,6 +62,7 @@ const login = (req, res, next) => {
     </script>
   </body>
 </html>`);
+      });
     });
   })(req, res, next);
 };

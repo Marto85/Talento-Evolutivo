@@ -7,7 +7,7 @@ Aplicación web para la gestión de empresas y empleados, desarrollada con Node.
 - **Entorno y Framework:** Node.js, Express 4
 - **Base de Datos:** MongoDB con ODM Mongoose
 - **Motor de Plantillas:** Pug
-- **Autenticación:** Passport.js y Express-Session
+- **Autenticación:** Passport.js, Express-Session, cookies seguras, CSRF y passwords hasheados
 
 ## Instalación
 
@@ -32,6 +32,8 @@ PORT=3000
 NODE_ENV=development
 SESSION_SECRET=tu_secreto_seguro_para_sesiones
 ```
+
+`SESSION_SECRET` debe ser un valor largo, privado y aleatorio. En producción es obligatorio porque se usa para firmar la cookie de sesión.
 
 ## Uso
 
@@ -120,7 +122,10 @@ src/
 ## Características
 
 Características y Mejoras Implementadas
-✅ **Autenticación**: Implementación de Passport.js con sesiones y protección de rutas.
+✅ **Autenticación**: Implementación de Passport.js con sesiones persistidas en MongoDB y protección de rutas.
+✅ **Seguridad de sesiones**: Cookies `httpOnly`, `sameSite=lax`, `secure` en producción y `SESSION_SECRET` obligatorio en producción.
+✅ **Passwords protegidos**: Hash de contraseñas con `crypto.scrypt` y migración automática de passwords viejos en texto plano al iniciar sesión.
+✅ **Protección CSRF**: Tokens CSRF en formularios y acciones sensibles por POST.
 ✅ **Base de Datos MongoDB**: Migración de archivos JSON estáticos a MongoDB integrado con Mongoose.
 ✅ **Arquitectura Modular**: Separación clara de responsabilidades (Models, Controllers, Routes, Middlewares).
 ✅ **Programación Asincrónica**: Uso de async/await en toda la aplicación.

@@ -9,6 +9,7 @@ block contenido
         .error-list
           p= error
       form(method="POST" action="/login")
+        input(type="hidden" name="_csrf" value=csrfToken)
         .campo
           label Usuario
           input(type="text" name="user" value=lastUser required autofocus)

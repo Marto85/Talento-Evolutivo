@@ -4,6 +4,7 @@ html(lang="es")
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     title Talento Evolutivo S.A.
+    meta(name="csrf-token" content=csrfToken)
     link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
     link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap")
     style.
@@ -96,12 +97,14 @@ html(lang="es")
 
         if (logoutButton) {
           logoutButton.addEventListener('click', async () => {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             try {
               await fetch('/logout', {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
+                  'X-CSRF-Token': csrfToken
                 }
               });
             } catch (error) {
