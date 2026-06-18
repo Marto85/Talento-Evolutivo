@@ -53,9 +53,14 @@ app.use(
 app.use(csrfProtection);
 app.use(passport.initialize());
 app.use(passport.session());
+app.use((req, res, next) => {
+  res.locals.currentPath = req.path;
+  res.locals.isAuthenticated = Boolean(req.isAuthenticated && req.isAuthenticated());
+  next();
+});
 
 // Rutas
-app.get("/", (req, res) => res.redirect("/login"));
+app.get("/", (req, res) => res.render("home", { homePage: true, authPage: false, authRequired: false }));
 app.use(authRoutes);
 app.use("/empresas", requireAuth, empresaRoutes);
 
