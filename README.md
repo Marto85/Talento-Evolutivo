@@ -133,6 +133,29 @@ Características y Mejoras Implementadas
 ✅ **Relaciones**: Vínculos entre Empresas y Empleados, incluyendo eliminación en cascada.
 ✅ **API JSON**: Soporte para requests JSON además de HTML  
 ✅ **Vistas Pug**: Motor de plantillas para renderizado server-side  
+✅ **Testing TDD**: Suite de 21+ tests unitarios e integración con Jest (validaciones, seguridad, CRUD)
+
+## Testing
+
+Se han implementado pruebas siguiendo **Test Driven Development (TDD)** según la teoría D11:
+
+### Test Unitarios (19 tests)
+- ✅ Validación de Empresas (5 tests)
+- ✅ Validación de Empleados (5 tests)
+- ✅ Seguridad de Passwords (11 tests - crypto.scrypt)
+
+### Tests de Integración (9 tests)
+- ✅ CRUD Empresas con Mongoose
+- ✅ Autenticación y sesiones
+
+**Ejecutar tests**:
+```bash
+npm test                    # Todos
+npm run test:watch         # Watch mode
+npm run test:coverage      # Con cobertura
+```
+
+Ver [`TESTING.md`](TESTING.md) y [`RESUMEN_TESTS.md`](RESUMEN_TESTS.md) para detalles completos.
 
 ## Validaciones
 
