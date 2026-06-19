@@ -160,29 +160,27 @@ html(lang="es")
             span.brand-name Talento Evolutivo
             span.brand-subtitle Gestion de haberes
         nav.nav-links(aria-label="Navegacion principal")
-          a(class=locals.currentPath === "/" ? "is-active" : "" href="/")
-            i.fas.fa-house
-            | Home
-          a(href="/#nosotros")
-            i.fas.fa-building
-            | Acerca de nosotros
-          a(href="/#servicios")
-            i.fas.fa-briefcase
-            | Servicios
-          a(href="/#clientes")
-            i.fas.fa-star
-            | Clientes
-          a(href="/#contacto")
-            i.fas.fa-envelope
-            | Contacto
           if locals.isAuthenticated
-            a.nav-cta(class=locals.currentPath.startsWith("/empresas") ? "is-active" : "" href="/empresas")
-              i.fas.fa-table
-              | Sistema
+            // when logged in show only the logout button (logo links to home)
             button#logout-button.nav-danger(type="button")
               i.fas.fa-right-from-bracket
               | Logout
           else
+            a(class=locals.currentPath === "/" ? "is-active" : "" href="/")
+              i.fas.fa-house
+              | Home
+            a(href="/#nosotros")
+              i.fas.fa-building
+              | Acerca de nosotros
+            a(href="/#servicios")
+              i.fas.fa-briefcase
+              | Servicios
+            a(href="/#clientes")
+              i.fas.fa-star
+              | Clientes
+            a(href="/#contacto")
+              i.fas.fa-envelope
+              | Contacto
             a.nav-cta(class=locals.currentPath === "/login" ? "is-active" : "" href="/login")
               i.fas.fa-right-to-bracket
               | Ingresar
