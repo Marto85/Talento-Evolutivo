@@ -29,6 +29,8 @@ block contenido
             .acciones
               a.btn-icon(href=`/empresas/${empresa.id}/empleados` title="Ver empleados")
                 i.fas.fa-users
+              a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones` title="Liquidaciones")
+                i.fas.fa-file-invoice-dollar
               button.btn-icon(type="button" onclick=`openModal('modal-edit-${empresa.id}')` title="Editar")
                 i.fas.fa-pencil-alt
               button.btn-icon.icon-danger(type="button" data-id=empresa.id data-nombre=empresa.razonSocial title="Eliminar" onclick="openDeleteModal(this)")

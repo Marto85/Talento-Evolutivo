@@ -1,0 +1,30 @@
+extends ../layout
+
+block contenido
+  .page-header
+    h2 Liquidaciones
+    p Seleccione una empresa para generar liquidaciones o ver reportes.
+  br
+  table
+    thead
+      tr
+        th Razón Social
+        th CUIT
+        th Contacto
+        th Empleados
+        th Acciones
+    tbody
+      each empresa in empresas
+        tr
+          td= empresa.razonSocial
+          td= empresa.cuit
+          td= empresa.contacto
+          td= empresa.cantidadEmpleados
+          td
+            .acciones
+              a.btn.btn-primary(href=`/empresas/${empresa.id}/liquidaciones`) Ver cálculo
+              a.btn(href=`/empresas/${empresa.id}/liquidaciones/guardadas` style="background:#176b87;color:#fff") Guardadas
+              a.btn.btn-warning(href=`/empresas/${empresa.id}/liquidaciones/reporte`) Reporte
+      if empresas.length === 0
+        tr
+          td(colspan="5" style="text-align:center;color:#999") No hay empresas registradas

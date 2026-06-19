@@ -1,0 +1,55 @@
+extends ../layout
+
+block contenido
+  a.btn-back(href=`/empresas/${empresa.id}`)
+    i.fas.fa-arrow-left
+    |  Volver a empresa
+  .page-header
+    h2 Reporte de liquidaciones
+    span.empresa-nombre= empresa.razonSocial
+  br
+  .card.card-wide
+    p(style="margin-bottom:16px;") Informe generado para el período #{periodo}.
+    table
+      thead
+        tr
+          th Empleado
+          th Puesto
+          th Bruto
+          th Descuentos
+          th Neto
+      tbody
+        each item in resumen.liquidaciones
+          tr
+            td= item.empleado.nombre + ' ' + item.empleado.apellido
+            td= item.empleado.puesto
+            td= item.format.bruto
+            td= item.format.descuentosTotales
+            td= item.format.neto
+        if resumen.liquidaciones.length === 0
+          tr
+            td(colspan="5" style="text-align:center;color:#999") No hay registros para este período
+  .card.card-wide(style="margin-top: 24px;")
+    h3 Resumen general
+    table
+      tbody
+        tr
+          td
+            strong Total empleados
+          td= resumen.totales.empleados
+        tr
+          td
+            strong Total bruto
+          td= resumen.totales.bruto
+        tr
+          td
+            strong Total descuentos
+          td= resumen.totales.descuentos
+        tr
+          td
+            strong Total neto
+          td= resumen.totales.neto
+    .form-acciones
+      button.btn.btn-warning(type="button" onclick="window.print()")
+        i.fas.fa-print
+        | Imprimir reporte

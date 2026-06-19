@@ -30,6 +30,8 @@ block contenido
             span(class="badge " + (empleado.activo ? "badge-si" : "badge-no"))= empleado.activo ? "Sí" : "No"
           td
             .acciones
+              a.btn-icon(href=`/empresas/${empresaId}/empleados/${empleado.id}` title="Ver detalle")
+                i.fas.fa-eye
               a.btn-icon(href=`/empresas/${empresaId}/empleados/${empleado.id}/editar` title="Editar")
                 i.fas.fa-pencil-alt
               button.btn-icon.icon-danger(type="button" data-id=empleado.id data-nombre=`${empleado.nombre} ${empleado.apellido}` title="Eliminar" onclick="openDeleteModal(this)")

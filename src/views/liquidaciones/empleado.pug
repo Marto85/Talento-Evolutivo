@@ -1,0 +1,68 @@
+extends ../layout
+
+block contenido
+  a.btn-back(href=`/empresas/${empresa.id}/empleados/${empleado.id}`)
+    i.fas.fa-arrow-left
+    |  Volver al empleado
+  .page-header
+    h2 Liquidación de sueldo
+    .empresa-meta
+      span.empresa-nombre= empresa.razonSocial
+      span.empleado-subtitle= empleado.nombre + ' ' + empleado.apellido
+  br
+  .card.card-wide
+    table
+      tbody
+        tr
+          td: strong Período
+          td= periodo
+        tr
+          td: strong Salario base
+          td= liquidacion.format.salarioBase
+        tr
+          td: strong Bonificaciones
+          td= liquidacion.format.bonificaciones
+        tr
+          td: strong Total bruto
+          td= liquidacion.format.bruto
+        tr
+          td: strong Jubilación (11%)
+          td= liquidacion.format.jubilacion
+        tr
+          td: strong Obra social (3%)
+          td= liquidacion.format.obraSocial
+        tr
+          td: strong Sindicato (3%)
+          td= liquidacion.format.sindicato
+        tr
+          td: strong ART (3%)
+          td= liquidacion.format.art
+        tr
+          td: strong Descuentos extras
+          td= liquidacion.format.descuentosExtras
+        tr
+          td: strong Descuentos totales
+          td= liquidacion.format.descuentosTotales
+        tr
+          td: strong Neto a cobrar
+          td= liquidacion.format.neto
+        tr
+          td: strong Aporte patronal
+          td= liquidacion.format.aportePatronal
+    form(method="POST" action=`/empresas/${empresa.id}/liquidaciones/${empleado.id}`)
+      input(type="hidden" name="_csrf" value=csrfToken)
+      .campo
+        label Bonificaciones
+        input(type="number" name="bonificaciones" value="0" min="0" step="100" required)
+      .campo
+        label Descuentos extras
+        input(type="number" name="descuentosExtras" value="0" min="0" step="100" required)
+      .campo
+        label Periodo
+        input(type="text" name="periodo" value=periodo placeholder="YYYY-MM" pattern="\d{4}-\d{2}" required)
+      .form-acciones
+        button.btn(type="submit") Guardar liquidación
+        a.btn.btn-secondary(href=`/empresas/${empresa.id}/liquidaciones/${empleado.id}/recibo?periodo=${periodo}`) Ver recibo
+        button.btn.btn-warning(type="button" onclick="window.print()")
+          i.fas.fa-print
+          | Imprimir
