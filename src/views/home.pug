@@ -1,0 +1,161 @@
+extends layout
+
+block contenido
+  section.home-hero
+    .home-hero-inner
+      .hero-copy
+        h1 Talento Evolutivo S.A.
+        p Gestionamos liquidacion de haberes, informacion laboral y procesos administrativos para que cada empresa pueda operar con claridad, control y continuidad.
+        .hero-actions
+          a.btn.btn-primary(href="/login")
+            i.fas.fa-right-to-bracket
+            | Acceder al sistema
+          a.btn(href="#servicios" style="background:#ffffff;color:#176b87;border:1px solid #c9d3df")
+            i.fas.fa-briefcase
+            | Ver servicios
+      .hero-panel(aria-label="Resumen operativo")
+        .hero-panel-header
+          span.hero-panel-title Panel de gestion laboral
+          span.hero-status
+            i.fas.fa-circle-check
+            |  Activo
+        .metric-grid
+          .metric
+            strong 24/7
+            span Disponibilidad de informacion
+          .metric
+            strong 100%
+            span Procesos trazables
+          .metric
+            strong +40
+            span Clientes simulados
+          .metric
+            strong 8h
+            span Sesiones seguras
+
+  section#nosotros.section-band
+    .section-inner
+      .section-heading
+        h2 Acerca de nosotros
+        p Somos una solucion orientada a ordenar la gestion de empresas, empleados y haberes con una experiencia simple para equipos administrativos.
+      .about-grid
+        .about-note
+          h3 Gestion clara para decisiones mejores
+          p Talento Evolutivo combina registro de empresas, administracion de empleados y control operativo para reducir tareas repetitivas y mejorar la calidad de la informacion.
+        .about-list
+          .about-item
+            i.fas.fa-shield-halved
+            div
+              h3 Seguridad aplicada
+              p Sesiones protegidas, cookies seguras, CSRF y passwords hasheados para cuidar el acceso al sistema.
+          .about-item
+            i.fas.fa-database
+            div
+              h3 Datos persistentes
+              p MongoDB centraliza empresas, empleados y sesiones para mantener continuidad en la operacion.
+          .about-item
+            i.fas.fa-chart-line
+            div
+              h3 Procesos escalables
+              p Una arquitectura modular permite sumar nuevas funciones sin perder claridad en el codigo.
+
+  section#servicios.section-band.alt
+    .section-inner
+      .section-heading
+        h2 Servicios que brindamos
+        p Acompanamos la gestion administrativa con herramientas pensadas para tareas recurrentes, control interno y seguimiento de personal.
+      .cards-grid
+        .service-card
+          i.fas.fa-file-invoice-dollar
+          h3 Liquidacion de haberes
+          p Organizacion de datos laborales y salariales para preparar liquidaciones con informacion confiable.
+        .service-card
+          i.fas.fa-users-gear
+          h3 Gestion de empleados
+          p Alta, edicion, consulta y seguimiento de empleados asociados a cada empresa.
+        .service-card
+          i.fas.fa-building-user
+          h3 Administracion de empresas
+          p Registro de clientes, CUIT, contacto, email y estado operativo desde un panel centralizado.
+
+  section#clientes.section-band
+    .section-inner
+      .section-heading
+        h2 Clientes que confian
+        p Algunas organizaciones simuladas que eligieron nuestra gestion para ordenar su informacion laboral.
+      .cards-grid
+        .client-card
+          .stars
+            i.fas.fa-star
+            i.fas.fa-star
+            i.fas.fa-star
+            i.fas.fa-star
+            i.fas.fa-star
+          h3 "Reducimos tiempos administrativos"
+          p La plataforma nos permitio centralizar empleados y empresas sin perder visibilidad del estado de cada registro.
+          .client-name
+            span.client-avatar AH
+            span Andina Holding
+        .client-card
+          .stars
+            i.fas.fa-star
+            i.fas.fa-star
+            i.fas.fa-star
+            i.fas.fa-star
+            i.fas.fa-star-half-stroke
+          h3 "Informacion siempre ordenada"
+          p El equipo de administracion trabaja con menos errores y mas rapidez para consultar datos clave.
+          .client-name
+            span.client-avatar NS
+            span Norte Servicios
+        .client-card
+          .stars
+            i.fas.fa-star
+            i.fas.fa-star
+            i.fas.fa-star
+            i.fas.fa-star
+            i.fas.fa-star
+          h3 "Una experiencia simple"
+          p La navegacion es clara y el acceso al sistema mantiene protegida la informacion sensible.
+          .client-name
+            span.client-avatar BM
+            span Baires Manufactura
+
+  section#contacto.section-band.alt
+    .section-inner
+      .section-heading
+        h2 Contacto
+        p Conversemos sobre como ordenar la gestion laboral y administrativa de tu organizacion.
+      .contact-grid
+        .contact-info
+          .contact-line
+            i.fas.fa-location-dot
+            span Av. Gestion 1234, Buenos Aires, Argentina
+          .contact-line
+            i.fas.fa-phone
+            span +54 11 4321-9876
+          .contact-line
+            i.fas.fa-envelope
+            span contacto@talentoevolutivo.com
+          .contact-line
+            i.fas.fa-clock
+            span Lunes a viernes de 9:00 a 18:00
+        form#contact-form.contact-form(action="#contacto" method="GET")
+          .form-grid
+            .campo
+              label Nombre
+              input(type="text" name="nombre" required)
+            .campo
+              label Email
+              input(type="email" name="email" required)
+            .campo.full
+              label Empresa
+              input(type="text" name="empresa")
+            .campo.full
+              label Mensaje
+              textarea(name="mensaje" required)
+          .form-acciones
+            button.btn.btn-primary(type="submit")
+              i.fas.fa-paper-plane
+              | Enviar consulta
+          p#contact-message.form-message Gracias por contactarnos. Te responderemos a la brevedad.
