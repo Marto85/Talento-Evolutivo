@@ -40,13 +40,14 @@ app.use(
   session({
     secret: getSessionSecret(),
     store: new MongoSessionStore(),
-    resave: false,
+    resave: true,
     saveUninitialized: false,
+    rolling: true,
     cookie: {
       httpOnly: true,
       secure: isProduction,
       sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 8,
+      maxAge: 1000 * 60 * 30, // 30 minutos de inactividad
     },
   })
 );

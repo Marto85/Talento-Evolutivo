@@ -1,7 +1,7 @@
 const session = require("express-session");
 const Session = require("../models/Session");
 
-const DEFAULT_TTL = 1000 * 60 * 60 * 8;
+const DEFAULT_TTL = 1000 * 60 * 60 * 2; // 2 horas de TTL absoluto
 
 class MongoSessionStore extends session.Store {
   async get(sid, callback) {
