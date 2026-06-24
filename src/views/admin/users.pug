@@ -3,6 +3,9 @@ extends ../layout
 block contenido
   .page-header
     h2 Administrar Usuarios
+  if error
+    .error-list
+      p= error
   if usuarios && usuarios.length
     table.admin-users
       thead
