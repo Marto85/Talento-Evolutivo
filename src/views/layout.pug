@@ -45,6 +45,10 @@ html(lang="es")
       .btn-danger { background: #d64b3f; color: white; }
       .btn-danger:hover { background: #b83b31; }
       .acciones { display: flex; gap: 6px; align-items: center; }
+      /* Admin users table actions: select expands, button aligned right */
+      table.admin-users .acciones { align-items: center; }
+      table.admin-users .acciones select { flex: 1; min-width: 200px; padding: 10px 12px; border-radius: 6px; }
+      table.admin-users .acciones button { margin-left: 12px; white-space: nowrap; }
       .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); max-width: 500px; }
       .recibo-shell { display: flex; justify-content: center; }
       .recibo-panel { width: 100%; max-width: 980px; background: white; padding: 28px; border-radius: 14px; box-shadow: 0 14px 32px rgba(23, 107, 135, 0.08); border: 1px solid rgba(23,107,135,0.08); }
@@ -212,6 +216,13 @@ html(lang="es")
             a.nav-cta(class=locals.currentPath.startsWith("/empresas/liquidaciones") ? "is-active" : "" href="/empresas/liquidaciones")
               i.fas.fa-file-invoice-dollar
               | Liquidaciones
+            if locals.authUserRole === 'admin'
+              a(class=locals.currentPath.startsWith('/admin') ? 'is-active' : '' href='/admin/users')
+                i.fas.fa-user-shield
+                | Administrar Usuarios
+            if locals.authUser
+              span(style="margin-left: 12px; font-size: 0.85rem; color: #5f7482;")
+                | #{locals.authUser.user} (#{locals.authUserRole})
             button#logout-button.nav-danger(type="button")
               i.fas.fa-right-from-bracket
               | Logout
@@ -231,6 +242,9 @@ html(lang="es")
             a(href="/#contacto")
               i.fas.fa-envelope
               | Contacto
+            a.nav-cta(class=locals.currentPath === "/register" ? "is-active" : "" href="/register" style="margin-right:8px;background:#95a5a6;color:#fff;border:0")
+              i.fas.fa-user-plus
+              | Registrarse
             a.nav-cta(class=locals.currentPath === "/login" ? "is-active" : "" href="/login")
               i.fas.fa-right-to-bracket
               | Ingresar

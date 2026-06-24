@@ -34,8 +34,9 @@ block contenido
                 i.fas.fa-eye
               a.btn-icon(href=`/empresas/${empresaId}/empleados/${empleado.id}/editar` title="Editar")
                 i.fas.fa-pencil-alt
-              button.btn-icon.icon-danger(type="button" data-id=empleado.id data-nombre=`${empleado.nombre} ${empleado.apellido}` title="Eliminar" onclick="openDeleteModal(this)")
-                i.fas.fa-trash
+              if locals.authUserRole === 'admin'
+                button.btn-icon.icon-danger(type="button" data-id=empleado.id data-nombre=`${empleado.nombre} ${empleado.apellido}` title="Eliminar" onclick="openDeleteModal(this)")
+                  i.fas.fa-trash
       if empleados.length === 0
         tr
           td(colspan="7" style="text-align:center;color:#999") No hay empleados registrados

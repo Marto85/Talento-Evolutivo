@@ -1,0 +1,25 @@
+extends ../layout
+
+block contenido
+  .login-shell
+    .card.login-card
+      h2 Registrarse
+      p.login-copy Crear un usuario para administrar Talento Evolutivo.
+      if errores
+        .error-list
+          each e in errores
+            p= e
+      form(method="POST" action="/register")
+        input(type="hidden" name="_csrf" value=csrfToken)
+        .campo
+          label Usuario
+          input(type="text" name="user" value=lastUser required autofocus)
+        .campo
+          label Password
+          input(type="password" name="password" required)
+        .campo
+          label Confirmar Password
+          input(type="password" name="confirm" required)
+        .form-acciones
+          a.btn(type="button" href="/login" style="background:#95a5a6;color:white") Volver
+          button.btn.btn-primary(type="submit") Registrarse

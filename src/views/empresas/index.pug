@@ -33,8 +33,9 @@ block contenido
                 i.fas.fa-file-invoice-dollar
               button.btn-icon(type="button" onclick=`openModal('modal-edit-${empresa.id}')` title="Editar")
                 i.fas.fa-pencil-alt
-              button.btn-icon.icon-danger(type="button" data-id=empresa.id data-nombre=empresa.razonSocial title="Eliminar" onclick="openDeleteModal(this)")
-                i.fas.fa-trash
+              if locals.authUserRole === 'admin'
+                button.btn-icon.icon-danger(type="button" data-id=empresa.id data-nombre=empresa.razonSocial title="Eliminar" onclick="openDeleteModal(this)")
+                  i.fas.fa-trash
       if empresas.length === 0
         tr
           td(colspan="7" style="text-align:center;color:#999") No hay empresas registradas

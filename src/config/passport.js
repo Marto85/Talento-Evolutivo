@@ -11,17 +11,35 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "30m";
 
 const ensureDefaultUser = async () => {
   const usuarios = await Usuario.estimatedDocumentCount();
-  if (usuarios > 0) return;
+  if (usuarios === 0) {
+    await Usuario.create({
+      user: DEFAULT_AUTH_USER,
+      password: await hashPassword(DEFAULT_AUTH_PASSWORD),
+      role: "admin",
+    });
+    return;
+  }
 
-  await Usuario.create({
-    user: DEFAULT_AUTH_USER,
-    password: await hashPassword(DEFAULT_AUTH_PASSWORD),
-  });
+  await Usuario.updateOne(
+    {
+      user: DEFAULT_AUTH_USER,
+      $or: [{ role: { $exists: false } }, { role: null }],
+    },
+    { role: "admin" }
+  );
+
+  await Usuario.updateMany(
+    {
+      user: { $ne: DEFAULT_AUTH_USER },
+      $or: [{ role: { $exists: false } }, { role: null }],
+    },
+    { role: "empleado" }
+  );
 };
 
-const generarToken = (usuarioId, usuarioName) => {
+const generarToken = (usuarioId, usuarioName, usuarioRole) => {
   return jwt.sign(
-    { id: usuarioId, user: usuarioName },
+    { id: usuarioId, user: usuarioName, role: usuarioRole },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES_IN }
   );
@@ -49,12 +67,13 @@ passport.use(
           usuario.password = await hashPassword(normalizedPassword);
         }
 
-        usuario.token = generarToken(usuario.id, usuario.user);
+        usuario.token = generarToken(usuario.id, usuario.user, usuario.role);
         await usuario.save();
 
         return done(null, {
           id: usuario.id,
           user: usuario.user,
+          role: usuario.role,
           token: usuario.token,
         });
       } catch (error) {
@@ -94,6 +113,7 @@ passport.deserializeUser(async (sessionUser, done) => {
     return done(null, {
       id: usuario.id,
       user: usuario.user,
+      role: usuario.role,
       token: sessionUser.token,
     });
   } catch (error) {

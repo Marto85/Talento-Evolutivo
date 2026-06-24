@@ -11,6 +11,7 @@ const errorHandler = require("./middlewares/errorHandler");
 
 const authRoutes = require("./routes/auth.routes");
 const empresaRoutes = require("./routes/empresa.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -57,6 +58,8 @@ app.use(passport.session());
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
   res.locals.isAuthenticated = Boolean(req.isAuthenticated && req.isAuthenticated());
+  res.locals.authUser = req.user || null;
+  res.locals.authUserRole = req.user?.role || null;
   next();
 });
 
@@ -64,6 +67,7 @@ app.use((req, res, next) => {
 app.get("/", (req, res) => res.render("home", { homePage: true, authPage: false, authRequired: false }));
 app.use(authRoutes);
 app.use("/empresas", requireAuth, empresaRoutes);
+app.use('/admin', adminRoutes);
 
 // 404
 app.use((req, res) => {

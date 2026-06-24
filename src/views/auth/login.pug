@@ -8,6 +8,9 @@ block contenido
       if error
         .error-list
           p= error
+      if success
+        .error-list(style="background:#e6f9ed;border-left-color:#1e8449")
+          p= success
       form(method="POST" action="/login")
         input(type="hidden" name="_csrf" value=csrfToken)
         .campo
@@ -18,3 +21,4 @@ block contenido
           input(type="password" name="password" required)
         .form-acciones
           button.btn.btn-primary(type="submit") Ingresar
+          a.btn(type="button" href="/register" style="background:#95a5a6;color:white;margin-left:8px") Registrarse
