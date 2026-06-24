@@ -27,6 +27,15 @@ const buildEmpresaList = async () => {
   return empresasConEmpleados;
 };
 
+const listarEmpresasParaLiquidaciones = async (req, res, next) => {
+  try {
+    const empresas = await buildEmpresaList();
+    res.render("empresas/liquidaciones", { empresas });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const crear = async (req, res, next) => {
   try {
     if (req.body.cuit) {
@@ -133,4 +142,4 @@ const ver = async (req, res, next) => {
   }
 };
 
-module.exports = { crear, actualizar, eliminar, listar, ver, formularioNueva, formularioEditar };
+module.exports = { crear, actualizar, eliminar, listar, ver, formularioNueva, formularioEditar, listarEmpresasParaLiquidaciones };

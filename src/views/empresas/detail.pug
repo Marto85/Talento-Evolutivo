@@ -6,7 +6,11 @@ block contenido
     |  Volver a Empresas
   .page-header
     h2= empresa.razonSocial
-    a.btn.btn-primary(href=`/empresas/${empresa.id}/empleados`) Ver empleados
+    .acciones
+      a.btn.btn-primary(href=`/empresas/${empresa.id}/empleados`) Ver empleados
+      a.btn(href=`/empresas/${empresa.id}/liquidaciones` style="background:#1f2d3d;color:#fff") Liquidaciones
+      a.btn(href=`/empresas/${empresa.id}/liquidaciones/guardadas` style="background:#176b87;color:#fff") Guardadas
+      a.btn.btn-warning(href=`/empresas/${empresa.id}/liquidaciones/reporte`) Ver reporte
   br
   .card
     table

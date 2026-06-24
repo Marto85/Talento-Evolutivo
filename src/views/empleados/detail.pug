@@ -6,6 +6,10 @@ block contenido
     |  Volver a empleados
   .page-header
     h2= empleado.nombre + " " + empleado.apellido
+    .acciones
+      a.btn.btn-primary(href=`/empresas/${empresaId}/liquidaciones/${empleado.id}`) Calcular sueldo
+      a.btn.btn-secondary(href=`/empresas/${empresaId}/liquidaciones/${empleado.id}/recibo`) Recibo de sueldo
+      a.btn(href=`/empresas/${empresaId}/empleados/${empleado.id}/liquidaciones` style="background:#176b87;color:#fff") Historial
   br
   .card
     table

@@ -1,0 +1,30 @@
+extends ../layout
+
+block contenido
+  a.btn-back(href=`/empresas/${empresa.id}`)
+    i.fas.fa-arrow-left
+    |  Volver a empresa
+  .page-header
+    h2 Liquidaciones guardadas
+    span.empresa-nombre= empresa.razonSocial
+  br
+  .card.card-wide
+    table
+      thead
+        tr
+          th Período
+          th Empleado
+          th Bruto
+          th Neto
+          th Fecha guardado
+      tbody
+        each item in liquidaciones
+          tr
+            td= item.periodo
+            td= item.empleadoId ? item.empleadoId.nombre + ' ' + item.empleadoId.apellido : 'Sin empleado'
+            td= item.bruto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+            td= item.neto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+            td= item.createdAt.toLocaleString('es-AR')
+        if liquidaciones.length === 0
+          tr
+            td(colspan="5" style="text-align:center;color:#999") No hay liquidaciones guardadas para esta empresa
