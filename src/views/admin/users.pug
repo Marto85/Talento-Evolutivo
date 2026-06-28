@@ -28,9 +28,8 @@ block contenido
                   option(value="admin" selected=(u.role==='admin')) Admin
                 button.btn-icon(type="submit" title="Guardar rol")
                   i.fas.fa-save
-                if locals.authUserId !== String(u._id)
-                  button.btn-icon.icon-danger(type="button" data-id=u._id data-nombre=u.user title="Eliminar usuario" onclick="openDeleteModal(this)")
-                    i.fas.fa-trash
+                button.btn-icon.icon-danger(type="button" data-id=u._id data-nombre=u.user title="Eliminar usuario" onclick="openDeleteModal(this)" disabled=locals.authUserId === String(u._id) style=locals.authUserId === String(u._id) ? "opacity:0.3;cursor:not-allowed" : "")
+                  i.fas.fa-trash
   else
     p No hay usuarios.
 
