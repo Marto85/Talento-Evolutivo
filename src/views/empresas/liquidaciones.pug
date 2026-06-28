@@ -22,9 +22,12 @@ block contenido
           td= empresa.cantidadEmpleados
           td
             .acciones
-              a.btn.btn-primary(href=`/empresas/${empresa.id}/liquidaciones`) Ver cálculo
-              a.btn(href=`/empresas/${empresa.id}/liquidaciones/guardadas` style="background:#176b87;color:#fff") Guardadas
-              a.btn.btn-warning(href=`/empresas/${empresa.id}/liquidaciones/reporte`) Reporte
+              a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones` title="Ver cálculo")
+                i.fas.fa-calculator
+              a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones/guardadas` title="Guardadas")
+                i.fas.fa-download 
+              a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones/reporte` title="Reporte")
+                i.fas.fa-clipboard-list
       if empresas.length === 0
         tr
           td(colspan="5" style="text-align:center;color:#999") No hay empresas registradas

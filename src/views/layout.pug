@@ -213,7 +213,7 @@ html(lang="es")
             a(class=locals.currentPath.startsWith("/empresas") && !locals.currentPath.startsWith("/empresas/liquidaciones") ? "is-active" : "" href="/empresas")
               i.fas.fa-building
               | Empresas
-            a.nav-cta(class=locals.currentPath.startsWith("/empresas/liquidaciones") ? "is-active" : "" href="/empresas/liquidaciones")
+            a(class=locals.currentPath.startsWith("/empresas/liquidaciones") ? "is-active" : "" href="/empresas/liquidaciones")
               i.fas.fa-file-invoice-dollar
               | Liquidaciones
             if locals.authUserRole === 'admin'
