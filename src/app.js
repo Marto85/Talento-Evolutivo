@@ -60,6 +60,7 @@ app.use((req, res, next) => {
   res.locals.isAuthenticated = Boolean(req.isAuthenticated && req.isAuthenticated());
   res.locals.authUser = req.user || null;
   res.locals.authUserRole = req.user?.role || null;
+  res.locals.authUserId = req.user?.id ? String(req.user.id) : null;
   next();
 });
 

@@ -75,4 +75,24 @@ const crearUsuario = async (req, res, next) => {
   }
 };
 
-module.exports = { mostrarUsuarios, cambiarRole, crearUsuario };
+const eliminarUsuario = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const requestingUserId = String(req.user?.id || req.user?._id || '');
+
+    if (requestingUserId && requestingUserId === String(id)) {
+      const usuarios = await Usuario.find({}, 'user role');
+      return res.status(400).render('admin/users', {
+        usuarios,
+        error: 'No podés eliminar tu propio usuario.'
+      });
+    }
+
+    await Usuario.findByIdAndDelete(id);
+    return res.redirect('/admin/users');
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { mostrarUsuarios, cambiarRole, crearUsuario, eliminarUsuario };

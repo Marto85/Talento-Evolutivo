@@ -8,5 +8,6 @@ const router = Router();
 router.get('/users', requireAuth, requireRole(['admin']), ctrl.mostrarUsuarios);
 router.post('/users/nuevo', requireAuth, requireRole(['admin']), ctrl.crearUsuario);
 router.post('/users/:id/role', requireAuth, requireRole(['admin']), ctrl.cambiarRole);
+router.post('/users/:id/eliminar', requireAuth, requireRole(['admin']), ctrl.eliminarUsuario);
 
 module.exports = router;
