@@ -5,9 +5,8 @@ const ctrl = require('../controllers/admin.controller');
 
 const router = Router();
 
-// List users
 router.get('/users', requireAuth, requireRole(['admin']), ctrl.mostrarUsuarios);
-// Update role
+router.post('/users/nuevo', requireAuth, requireRole(['admin']), ctrl.crearUsuario);
 router.post('/users/:id/role', requireAuth, requireRole(['admin']), ctrl.cambiarRole);
 
 module.exports = router;

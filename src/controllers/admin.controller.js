@@ -1,4 +1,7 @@
+const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
+const { JWT_SECRET, JWT_EXPIRES_IN } = require('../config/passport');
+const { hashPassword } = require('../utils/password');
 
 const mostrarUsuarios = async (req, res, next) => {
   try {
@@ -40,4 +43,36 @@ const cambiarRole = async (req, res, next) => {
   }
 };
 
-module.exports = { mostrarUsuarios, cambiarRole };
+const crearUsuario = async (req, res, next) => {
+  try {
+    const user = String(req.body.user || '').trim();
+    const password = String(req.body.password || '').trim();
+    const confirm = String(req.body.confirm || '').trim();
+    const role = String(req.body.role || 'empleado').trim();
+
+    const errores = [];
+    if (!user) errores.push('Usuario es obligatorio');
+    if (!password) errores.push('Password es obligatorio');
+    if (password !== confirm) errores.push('Las contraseñas no coinciden');
+    if (password && password.length < 4) errores.push('La contraseña debe tener al menos 4 caracteres');
+    if (!['admin', 'empleado', 'auditor'].includes(role)) errores.push('Rol inválido');
+
+    if (errores.length > 0) {
+      const usuarios = await Usuario.find({}, 'user role');
+      return res.status(400).render('admin/users', { usuarios, errores, lastUser: user, modalAbierto: 'modal-nuevo-usuario' });
+    }
+
+    const hashed = await hashPassword(password);
+    const nuevo = await Usuario.create({ user, password: hashed, role });
+
+    const token = jwt.sign({ id: nuevo.id, user: nuevo.user, role: nuevo.role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    nuevo.token = token;
+    await nuevo.save();
+
+    return res.redirect('/admin/users');
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { mostrarUsuarios, cambiarRole, crearUsuario };

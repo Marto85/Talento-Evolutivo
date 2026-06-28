@@ -3,6 +3,7 @@ extends ../layout
 block contenido
   .page-header
     h2 Administrar Usuarios
+    button.btn.btn-primary(type="button" onclick="openModal('modal-nuevo-usuario')") + Nuevo Usuario
   if error
     .error-list
       p= error
@@ -28,3 +29,47 @@ block contenido
                 button.btn(type="submit") Cambiar
   else
     p No hay usuarios.
+
+  //- Modal Nuevo Usuario
+  #modal-nuevo-usuario.modal-overlay(style="display:none")
+    .modal-box
+      h3 Nuevo Usuario
+      if locals.errores && locals.modalAbierto === 'modal-nuevo-usuario'
+        .error-list
+          each e in errores
+            p= e
+      form(method="POST" action="/admin/users/nuevo")
+        input(type="hidden" name="_csrf" value=csrfToken)
+        .campo
+          label Usuario
+          input(type="text" name="user" value=locals.lastUser || "" required autofocus)
+        .campo
+          label Password
+          input(type="password" name="password" required)
+        .campo
+          label Confirmar Password
+          input(type="password" name="confirm" required)
+        .campo
+          label Rol
+          select(name="role")
+            option(value="empleado") Empleado
+            option(value="auditor") Auditor
+            option(value="admin") Admin
+        .form-acciones
+          button.btn(type="button" onclick="closeModal('modal-nuevo-usuario')" style="background:#95a5a6;color:white") Cancelar
+          button.btn.btn-primary(type="submit") Guardar
+
+  script.
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+    document.querySelectorAll('.modal-overlay').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        if (e.target === el) closeModal(el.id);
+      });
+    });
+    var _modalAbierto = '!{locals.modalAbierto || ""}';
+    if (_modalAbierto) openModal(_modalAbierto);
