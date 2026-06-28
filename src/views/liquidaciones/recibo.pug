@@ -1,0 +1,132 @@
+extends ../layout
+
+block contenido
+  a.btn-back(href=`/empresas/${empresa.id}/empleados/${empleado.id}`)
+    i.fas.fa-arrow-left
+    |  Volver al empleado
+  .page-header
+    h2 Recibo de haberes
+    .empresa-nombre= empresa.razonSocial
+  br
+  .recibo-shell
+    .recibo-panel
+      .recibo-top
+        .recibo-firma
+          span RECIBO DE HABERES
+          strong ORIGINAL
+        .recibo-data
+          .recibo-row
+            span.label Apellido y nombre
+            span.value= empleado.apellido + ' ' + empleado.nombre
+          .recibo-row
+            span.label CUIL
+            span.value= empleado.dni
+          .recibo-row
+            span.label Legajo Nº
+            span.value= empleado.id
+          .recibo-row
+            span.label Fecha ingreso
+            span.value= empleado.fechaIngreso ? new Date(empleado.fechaIngreso).toLocaleDateString('es-AR') : '-'
+          .recibo-row
+            span.label Categoría
+            span.value= empleado.puesto
+          .recibo-row
+            span.label Contratación
+            span.value= empleado.activo ? 'Tiempo completo' : 'No activo'
+      .recibo-summary
+        .recibo-summary-item
+          span.label Remuneración asignada
+          strong= liquidacion.format.salarioBase
+        .recibo-summary-item
+          span.label Período de pago
+          strong= periodo
+        .recibo-summary-item
+          span.label Recibo Nº
+          strong= '---'
+      .recibo-table-wrapper
+        table.recibo-table
+          thead
+            tr
+              th Conceptos
+              th V.U.
+              th Unidades
+              th Remunerativa
+              th No remunerativa
+              th Descuentos
+          tbody
+            tr
+              td Sueldo básico
+              td
+              td
+              td= liquidacion.format.salarioBase
+              td
+              td
+            tr
+              td Bonificaciones
+              td
+              td
+              td= liquidacion.format.bonificaciones
+              td
+              td
+            tr
+              td Total bruto
+              td
+              td
+              td= liquidacion.format.bruto
+              td
+              td
+            tr
+              td Jubilación 11%
+              td 11%
+              td
+              td
+              td
+              td= liquidacion.format.jubilacion
+            tr
+              td Obra social 3%
+              td 3%
+              td
+              td
+              td
+              td= liquidacion.format.obraSocial
+            tr
+              td Sindicato 3%
+              td 3%
+              td
+              td
+              td
+              td= liquidacion.format.sindicato
+            tr
+              td ART 3%
+              td 3%
+              td
+              td
+              td
+              td= liquidacion.format.art
+            tr
+              td Descuentos extras
+              td
+              td
+              td
+              td
+              td= liquidacion.format.descuentosExtras
+          tfoot
+            tr
+              td(colspan="4")
+                strong Totales
+              td= liquidacion.format.descuentosTotales
+              td= liquidacion.format.neto
+      .recibo-footer
+        .footer-note
+          p Son pesos: #{Number(liquidacion.neto).toLocaleString('es-AR', { minimumFractionDigits:2, maximumFractionDigits:2 })} CON LETRA
+        .recibo-footer-row
+          .footer-left
+            span Lugar y fecha de pago
+            strong= `Buenos Aires, ${fechaPago.toLocaleDateString('es-AR')}`
+          .footer-right
+            span Forma de pago
+            strong Transferencia bancaria
+      .form-acciones
+        button.btn.btn-warning(type="button" onclick="window.print()")
+          i.fas.fa-print
+          | Imprimir recibo

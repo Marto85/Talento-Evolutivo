@@ -13,6 +13,13 @@ const usuarioSchema = new mongoose.Schema(
       required: [true, "password es obligatorio"],
       trim: true,
     },
+    role: {
+      type: String,
+      enum: ["admin", "empleado", "auditor"],
+      default: "empleado",
+      required: true,
+      trim: true,
+    },
     token: {
       type: String,
       trim: true,

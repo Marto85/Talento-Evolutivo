@@ -1,0 +1,30 @@
+extends ../layout
+
+block contenido
+  .page-header
+    h2 Administrar Usuarios
+  if error
+    .error-list
+      p= error
+  if usuarios && usuarios.length
+    table.admin-users
+      thead
+        tr
+          th Usuario
+          th Rol
+          th Acciones
+      tbody
+        each u in usuarios
+          tr
+            td= u.user
+            td= u.role
+            td
+              form(method="POST" action=`/admin/users/${u._id}/role` class="acciones")
+                input(type="hidden" name="_csrf" value=csrfToken)
+                select(name="role")
+                  option(value="empleado" selected=(u.role==='empleado') ) Empleado
+                  option(value="auditor" selected=(u.role==='auditor') ) Auditor
+                  option(value="admin" selected=(u.role==='admin') ) Admin
+                button.btn(type="submit") Cambiar
+  else
+    p No hay usuarios.
