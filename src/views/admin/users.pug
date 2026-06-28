@@ -27,19 +27,22 @@ block contenido
                 span.badge.badge-no Pendiente
             td
               .acciones
-                if !u.aprobado
-                  button.btn-icon(type="button" data-id=u._id data-nombre=u.user title="Aprobar usuario" onclick="openAprobarModal(this)" style="color:#1e8449")
-                    i.fas.fa-user-check
                 form(method="POST" action=`/admin/users/${u._id}/role` style="display:contents")
                   input(type="hidden" name="_csrf" value=csrfToken)
                   select(name="role")
                     option(value="empleado" selected=(u.role==='empleado')) Empleado
                     option(value="auditor" selected=(u.role==='auditor')) Auditor
                     option(value="admin" selected=(u.role==='admin')) Admin
-                  button.btn-icon(type="submit" title="Guardar rol")
-                    i.fas.fa-save
+                button.btn-icon(type="submit" title="Guardar rol")
+                  i.fas.fa-save
                 button.btn-icon.icon-danger(type="button" data-id=u._id data-nombre=u.user title="Eliminar usuario" onclick="openDeleteModal(this)" disabled=locals.authUserId === String(u._id) style=locals.authUserId === String(u._id) ? "opacity:0.3;cursor:not-allowed" : "")
                   i.fas.fa-trash
+                if !u.aprobado
+                  button.btn-icon(type="button" data-id=u._id data-nombre=u.user title="Aprobar usuario" onclick="openAprobarModal(this)" style="color:#1e8449")
+                    i.fas.fa-user-check
+                else
+                  button.btn-icon(type="button" title="Usuario aprobado" disabled style="opacity:0.3;cursor:not-allowed")
+                    i.fas.fa-user-check
   else
     p No hay usuarios.
 

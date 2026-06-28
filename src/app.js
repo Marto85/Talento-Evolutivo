@@ -1,4 +1,6 @@
 require("dotenv").config();
+const http = require("http");
+const { Server: SocketIO } = require("socket.io");
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
@@ -12,8 +14,12 @@ const errorHandler = require("./middlewares/errorHandler");
 const authRoutes = require("./routes/auth.routes");
 const empresaRoutes = require("./routes/empresa.routes");
 const adminRoutes = require("./routes/admin.routes");
+const notifRoutes = require("./routes/notificacion.routes");
+const Notificacion = require("./models/Notificacion");
 
 const app = express();
+const httpServer = http.createServer(app);
+const io = new SocketIO(httpServer);
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -55,12 +61,23 @@ app.use(
 app.use(csrfProtection);
 app.use(passport.initialize());
 app.use(passport.session());
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   res.locals.currentPath = req.path;
   res.locals.isAuthenticated = Boolean(req.isAuthenticated && req.isAuthenticated());
   res.locals.authUser = req.user || null;
   res.locals.authUserRole = req.user?.role || null;
   res.locals.authUserId = req.user?.id ? String(req.user.id) : null;
+
+  if (req.user?.id) {
+    try {
+      res.locals.notificaciones = await Notificacion.find({ destinatarioId: req.user.id, leido: false }).sort({ createdAt: -1 }).limit(20).lean();
+    } catch (_) {
+      res.locals.notificaciones = [];
+    }
+  } else {
+    res.locals.notificaciones = [];
+  }
+
   next();
 });
 
@@ -69,6 +86,7 @@ app.get("/", (req, res) => res.render("home", { homePage: true, authPage: false,
 app.use(authRoutes);
 app.use("/empresas", requireAuth, empresaRoutes);
 app.use('/admin', adminRoutes);
+app.use('/notificaciones', notifRoutes);
 
 // 404
 app.use((req, res) => {
@@ -78,11 +96,21 @@ app.use((req, res) => {
 // Error handler middleware (debe ser el último)
 app.use(errorHandler);
 
+// Socket.io — admins se unen a su room al conectar
+io.on("connection", (socket) => {
+  socket.on("join-admins", () => {
+    socket.join("admins");
+  });
+});
+
+// Exponer io para usarlo en controladores
+app.set("io", io);
+
 // Iniciar servidor
 const startServer = async () => {
   try {
     await connectDB();
-    app.listen(PORT, () => {
+    httpServer.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });
   } catch (error) {

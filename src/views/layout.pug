@@ -161,6 +161,16 @@ html(lang="es")
       .social-links { display: flex; gap: 10px; align-items: center; }
       .social-links a { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; color: #fff; background: rgba(255,255,255,0.1); text-decoration: none; }
       .social-links a:hover { background: #f08a2b; }
+      .notif-wrapper { position: relative; margin-left: 12px; }
+      .notif-trigger { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: none; cursor: pointer; font: inherit; font-size: 0.85rem; color: #5f7482; padding: 8px 10px; border-radius: 6px; }
+      .notif-trigger:hover { background: #e9f3f6; color: #176b87; }
+      .notif-badge { background: #d64b3f; color: #fff; font-size: 0.7rem; font-weight: 700; border-radius: 999px; padding: 1px 6px; min-width: 18px; text-align: center; }
+      .notif-dropdown { position: absolute; right: 0; top: calc(100% + 6px); background: #fff; border: 1px solid #dfe6ee; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); min-width: 300px; z-index: 1100; overflow: hidden; }
+      .notif-row { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #f0f4f8; font-size: 0.85rem; color: #1f2d3d; transition: background 0.15s; }
+      .notif-row:last-child { border-bottom: none; }
+      .notif-row:hover { background: #f0f7fa; }
+      .notif-row i { color: #176b87; margin-top: 2px; flex-shrink: 0; }
+      .notif-empty { padding: 16px; font-size: 0.85rem; color: #8899aa; text-align: center; }
       .page-loader { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(255,255,255,0.82); backdrop-filter: blur(2px); z-index: 2000; }
       .page-loader.is-visible { display: flex; }
       .page-loader-box { min-width: 220px; padding: 22px 26px; border-radius: 10px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.16); text-align: center; }
@@ -221,8 +231,20 @@ html(lang="es")
                 i.fas.fa-user-shield
                 | Administrar Usuarios
             if locals.authUser
-              span(style="margin-left: 12px; font-size: 0.85rem; color: #5f7482;")
-                | #{locals.authUser.user} (#{locals.authUserRole})
+              .notif-wrapper
+                button#notif-btn.notif-trigger(type="button" aria-label="Notificaciones")
+                  span.notif-user-label #{locals.authUser.user} (#{locals.authUserRole})
+                  if locals.notificaciones && locals.notificaciones.length
+                    span.notif-badge= locals.notificaciones.length
+                  i.fas.fa-chevron-down(style="font-size:0.7rem;margin-left:4px;color:#8899aa")
+                #notif-dropdown.notif-dropdown(style="display:none")
+                  if locals.notificaciones && locals.notificaciones.length
+                    each n in locals.notificaciones
+                      .notif-row(data-id=String(n._id) data-link=n.link || '' onclick="marcarLeida(this)")
+                        i.fas.fa-user-clock
+                        span= n.mensaje
+                  else
+                    .notif-empty Sin notificaciones
             button#logout-button.nav-danger(type="button")
               i.fas.fa-right-from-bracket
               | Logout
@@ -369,3 +391,85 @@ html(lang="es")
 
         window.addEventListener('pageshow', hidePageLoader);
       });
+    if locals.isAuthenticated
+      script(src="/socket.io/socket.io.js")
+      script.
+        (function() {
+          var socket = io();
+          var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+          // Dropdown toggle
+          var btn = document.getElementById('notif-btn');
+          var dropdown = document.getElementById('notif-dropdown');
+          if (btn && dropdown) {
+            btn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              var visible = dropdown.style.display !== 'none';
+              dropdown.style.display = visible ? 'none' : 'block';
+            });
+            document.addEventListener('click', function() {
+              if (dropdown) dropdown.style.display = 'none';
+            });
+            dropdown.addEventListener('click', function(e) { e.stopPropagation(); });
+          }
+
+          // Marcar como leída y navegar
+          window.marcarLeida = function(row) {
+            var id = row.dataset.id;
+            var link = row.dataset.link;
+            fetch('/notificaciones/' + id + '/leer', {
+              method: 'POST',
+              credentials: 'same-origin',
+              headers: { 'X-CSRF-Token': csrfToken, 'Content-Type': 'application/json' }
+            }).finally(function() {
+              row.remove();
+              actualizarBadge();
+              if (link) window.location.href = link;
+            });
+          };
+
+          function actualizarBadge() {
+            var badge = document.querySelector('.notif-badge');
+            var rows = document.querySelectorAll('.notif-row');
+            if (badge) {
+              if (rows.length === 0) {
+                badge.remove();
+                var empty = document.createElement('div');
+                empty.className = 'notif-empty';
+                empty.textContent = 'Sin notificaciones';
+                if (dropdown) dropdown.appendChild(empty);
+              } else {
+                badge.textContent = rows.length;
+              }
+            }
+          }
+
+          var _userRole = '!{locals.authUserRole || ""}';
+          if (_userRole === 'admin') {
+            socket.emit('join-admins');
+            socket.on('notificacion', function(data) {
+              // Agregar al dropdown
+              var empty = dropdown ? dropdown.querySelector('.notif-empty') : null;
+              if (empty) empty.remove();
+
+              var row = document.createElement('div');
+              row.className = 'notif-row';
+              row.dataset.id = data.id;
+              row.dataset.link = data.link || '';
+              row.innerHTML = '<i class="fas fa-user-clock"></i><span>' + data.mensaje + '</span>';
+              row.setAttribute('onclick', 'marcarLeida(this)');
+              if (dropdown) dropdown.insertBefore(row, dropdown.firstChild);
+
+              // Badge
+              var badge = document.querySelector('.notif-badge');
+              if (badge) {
+                badge.textContent = parseInt(badge.textContent || '0') + 1;
+              } else if (btn) {
+                var newBadge = document.createElement('span');
+                newBadge.className = 'notif-badge';
+                newBadge.textContent = '1';
+                btn.insertBefore(newBadge, btn.querySelector('i'));
+              }
+            });
+          }
+        })();

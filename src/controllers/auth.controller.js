@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const Usuario = require("../models/Usuario");
 const { passport, ensureDefaultUser, JWT_SECRET, JWT_EXPIRES_IN } = require("../config/passport");
 const { hashPassword } = require("../utils/password");
+const { notificarAdmins } = require("../utils/notificar");
 
 const renderLogin = (res, options = {}) => {
   res.render("auth/login", {
@@ -57,6 +58,8 @@ const registrar = async (req, res, next) => {
 
     const hashed = await hashPassword(password);
     await Usuario.create({ user, password: hashed, role: "empleado", aprobado: false });
+
+    await notificarAdmins(req.app, `Nuevo usuario pendiente de aprobación: ${user}`, '/admin/users');
 
     return res.redirect("/pendiente");
   } catch (error) {
