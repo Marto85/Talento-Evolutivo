@@ -25,6 +25,10 @@ const usuarioSchema = new mongoose.Schema(
       trim: true,
       default: null,
     },
+    aprobado: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

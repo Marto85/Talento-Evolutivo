@@ -13,6 +13,7 @@ block contenido
         tr
           th Usuario
           th Rol
+          th Estado
           th Acciones
       tbody
         each u in usuarios
@@ -20,14 +21,23 @@ block contenido
             td= u.user
             td= u.role
             td
-              form(method="POST" action=`/admin/users/${u._id}/role` class="acciones")
-                input(type="hidden" name="_csrf" value=csrfToken)
-                select(name="role")
-                  option(value="empleado" selected=(u.role==='empleado')) Empleado
-                  option(value="auditor" selected=(u.role==='auditor')) Auditor
-                  option(value="admin" selected=(u.role==='admin')) Admin
-                button.btn-icon(type="submit" title="Guardar rol")
-                  i.fas.fa-save
+              if u.aprobado
+                span.badge.badge-si Aprobado
+              else
+                span.badge.badge-no Pendiente
+            td
+              .acciones
+                if !u.aprobado
+                  button.btn-icon(type="button" data-id=u._id data-nombre=u.user title="Aprobar usuario" onclick="openAprobarModal(this)" style="color:#1e8449")
+                    i.fas.fa-user-check
+                form(method="POST" action=`/admin/users/${u._id}/role` style="display:contents")
+                  input(type="hidden" name="_csrf" value=csrfToken)
+                  select(name="role")
+                    option(value="empleado" selected=(u.role==='empleado')) Empleado
+                    option(value="auditor" selected=(u.role==='auditor')) Auditor
+                    option(value="admin" selected=(u.role==='admin')) Admin
+                  button.btn-icon(type="submit" title="Guardar rol")
+                    i.fas.fa-save
                 button.btn-icon.icon-danger(type="button" data-id=u._id data-nombre=u.user title="Eliminar usuario" onclick="openDeleteModal(this)" disabled=locals.authUserId === String(u._id) style=locals.authUserId === String(u._id) ? "opacity:0.3;cursor:not-allowed" : "")
                   i.fas.fa-trash
   else
@@ -62,6 +72,17 @@ block contenido
           button.btn(type="button" onclick="closeModal('modal-nuevo-usuario')" style="background:#95a5a6;color:white") Cancelar
           button.btn.btn-primary(type="submit") Guardar
 
+  //- Modal Aprobar Usuario
+  #modal-aprobar.modal-overlay(style="display:none")
+    .modal-box
+      h3 Aprobar usuario
+      p#aprobar-msg ¿Aprobar este usuario?
+      form#aprobar-form(method="POST" action="")
+        input(type="hidden" name="_csrf" value=csrfToken)
+        .form-acciones
+          button.btn(type="button" onclick="closeModal('modal-aprobar')" style="background:#95a5a6;color:white") Cancelar
+          button.btn.btn-primary(type="submit") Aprobar
+
   //- Modal Eliminar Usuario
   #modal-delete.modal-overlay(style="display:none")
     .modal-box
@@ -80,10 +101,17 @@ block contenido
     function closeModal(id) {
       document.getElementById(id).style.display = 'none';
     }
+    function openAprobarModal(btn) {
+      const id = btn.dataset.id;
+      const nombre = btn.dataset.nombre;
+      document.getElementById('aprobar-msg').textContent = '¿Aprobar al usuario "' + nombre + '"?';
+      document.getElementById('aprobar-form').action = '/admin/users/' + id + '/aprobar';
+      openModal('modal-aprobar');
+    }
     function openDeleteModal(btn) {
       const id = btn.dataset.id;
       const nombre = btn.dataset.nombre;
-      document.getElementById('delete-msg').textContent = '¿Eliminar "' + nombre + '"?';
+      document.getElementById('delete-msg').textContent = '¿Eliminar al usuario "' + nombre + '"?';
       document.getElementById('delete-form').action = '/admin/users/' + id + '/eliminar';
       openModal('modal-delete');
     }
