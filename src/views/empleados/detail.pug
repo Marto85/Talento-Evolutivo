@@ -7,8 +7,8 @@ block contenido
   .page-header
     h2= empleado.nombre + " " + empleado.apellido
     .acciones
-      button.btn.btn-primary(type="button" onclick="openModal('modal-liquidar')") Calcular sueldo
-      a.btn.btn-secondary(href=`/empresas/${empresaId}/empleados/${empleado.id}/editar`) Editar
+      button.btn.btn-primary(type="button" onclick="openModal('modal-liquidar')") Generar Liquidación
+      button.btn.btn-secondary(type="button" onclick="openModal('modal-editar')") Editar
   br
   .card
     table
@@ -68,10 +68,59 @@ block contenido
   else
     p(style="color:#999;font-size:0.9rem") No hay liquidaciones guardadas para este empleado.
 
+  //- Modal Editar Empleado
+  #modal-editar.modal-overlay(style="display:none")
+    .modal-box
+      h3 Editar Empleado
+      if locals.errores && locals.modalAbierto === 'modal-editar'
+        .error-list
+          each e in errores
+            p= e
+      form(method="POST" action=`/empresas/${empresaId}/empleados/${empleado.id}/editar`)
+        input(type="hidden" name="_csrf" value=csrfToken)
+        .campo
+          label Nombre
+          input(type="text" name="nombre" value=empleado.nombre required)
+        .campo
+          label Apellido
+          input(type="text" name="apellido" value=empleado.apellido required)
+        .campo
+          label DNI
+          input(type="text" name="dni" value=empleado.dni required)
+        .campo
+          label Puesto
+          input(type="text" name="puesto" value=empleado.puesto required)
+        .campo
+          label Salario Base
+          input(type="number" name="salarioBase" value=empleado.salarioBase required min="0" step="1000")
+        .campo
+          label Fecha de ingreso
+          - var fi = empleado.fechaIngreso ? new Date(empleado.fechaIngreso) : null
+          - var fiDia = fi ? fi.getUTCDate() : ''
+          - var fiMes = fi ? fi.getUTCMonth() + 1 : ''
+          - var fiAnio = fi ? fi.getUTCFullYear() : ''
+          .fecha-ingreso-selects
+            select(name="fechaDia" required)
+              option(value="" disabled selected=(fiDia==='')) Día
+              - for (var d = 1; d <= 31; d++)
+                option(value=d selected=(fiDia===d))= d
+            select(name="fechaMes" required)
+              option(value="" disabled selected=(fiMes==='')) Mes
+              each m in [['1','Enero'],['2','Febrero'],['3','Marzo'],['4','Abril'],['5','Mayo'],['6','Junio'],['7','Julio'],['8','Agosto'],['9','Septiembre'],['10','Octubre'],['11','Noviembre'],['12','Diciembre']]
+                option(value=m[0] selected=(String(fiMes)===m[0]))= m[1]
+            input(type="number" name="fechaAnio" placeholder="Año" value=fiAnio min="1900" max=new Date().getFullYear() required)
+        .campo
+          label.checkbox-label
+            input(type="checkbox" name="activo" checked=empleado.activo)
+            |  Activo
+        .form-acciones
+          button.btn(type="button" onclick="closeModal('modal-editar')" style="background:#95a5a6;color:white") Cancelar
+          button.btn.btn-primary(type="submit") Guardar
+
   //- Modal Calcular sueldo
   #modal-liquidar.modal-overlay(style="display:none")
     .modal-box
-      h3 Calcular sueldo
+      h3 Generar Liquidación
       p(style="color:#5f7482;font-size:0.88rem;margin-bottom:16px")= empleado.nombre + ' ' + empleado.apellido
       form#liquidar-form(method="GET" action="")
         .campo
