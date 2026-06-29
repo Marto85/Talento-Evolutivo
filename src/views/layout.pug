@@ -391,10 +391,13 @@ html(lang="es")
         window.addEventListener('pageshow', hidePageLoader);
       });
     if locals.isAuthenticated
-      script(src="/socket.io/socket.io.js")
+      script(src="/socket.io/socket.io.js" onerror="window._socketUnavailable=true")
       script.
         (function() {
-          var socket = io();
+          var socket = null;
+          if (typeof io !== 'undefined') {
+            try { socket = io(); } catch(e) {}
+          }
           var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
           // Dropdown toggle
@@ -444,7 +447,7 @@ html(lang="es")
           }
 
           var _userRole = '!{locals.authUserRole || ""}';
-          if (_userRole === 'admin') {
+          if (_userRole === 'admin' && socket) {
             socket.emit('join-admins');
             socket.on('notificacion', function(data) {
               // Agregar al dropdown
