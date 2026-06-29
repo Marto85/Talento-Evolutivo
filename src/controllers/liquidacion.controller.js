@@ -47,6 +47,7 @@ const generarReciboEmpleado = async (req, res, next) => {
     // Buscar liquidación guardada para ese período primero
     const guardada = await Liquidacion.findOne({ empresaId, empleadoId, periodo });
     let liquidacion;
+    let nroRecibo = null;
     if (guardada) {
       const calculo = calcularLiquidacion({
         salarioBase: guardada.salarioBase,
@@ -54,12 +55,15 @@ const generarReciboEmpleado = async (req, res, next) => {
         descuentosExtras: guardada.descuentosExtras,
       });
       liquidacion = { ...calculo, empleado, empresa, periodo };
+      const idStr = String(guardada._id);
+      const ultimos8 = idStr.slice(-8).toUpperCase();
+      nroRecibo = `0001-${ultimos8}`;
     } else {
       const calculo = calcularLiquidacion({ salarioBase: empleado.salarioBase });
       liquidacion = { ...calculo, empleado, empresa, periodo };
     }
 
-    res.render("liquidaciones/recibo", { empresa, empleado, liquidacion, periodo, fechaPago });
+    res.render("liquidaciones/recibo", { empresa, empleado, liquidacion, periodo, fechaPago, nroRecibo });
   } catch (error) {
     next(error);
   }
@@ -73,12 +77,13 @@ const listarLiquidacionesEmpresa = async (req, res, next) => {
     const empresa = await Empresa.findById(empresaId);
     if (!empresa) return res.status(404).render("404", { mensaje: "Empresa no encontrada" });
 
-    const liquidaciones = await Liquidacion.find({ empresaId })
-      .populate("empleadoId")
-      .sort({ periodo: -1, createdAt: -1 });
+    const [liquidaciones, empleados] = await Promise.all([
+      Liquidacion.find({ empresaId }).populate("empleadoId").sort({ periodo: -1, createdAt: -1 }),
+      Empleado.find({ empresaId, activo: true }).sort({ apellido: 1 }),
+    ]);
 
     if (req.accepts("json") && !req.accepts("html")) return res.json(liquidaciones);
-    res.render("liquidaciones/empresa", { empresa, liquidaciones });
+    res.render("liquidaciones/empresa", { empresa, liquidaciones, empleados });
   } catch (error) {
     next(error);
   }
@@ -205,8 +210,38 @@ const guardarLiquidacion = async (req, res, next) => {
       return res.status(404).render("404", { mensaje: "Empleado no encontrado" });
     }
 
-    const calculo = calcularLiquidacion({ salarioBase: empleado.salarioBase, bonificaciones, descuentosExtras });
     const periodoFinal = (mes && anio) ? `${anio}-${mes}` : obtenerPeriodo();
+
+    // Validar que el período sea posterior a la fecha de ingreso
+    if (empleado.fechaIngreso) {
+      const [pAnio, pMes] = periodoFinal.split("-").map(Number);
+      const ingreso = new Date(empleado.fechaIngreso);
+      const ingresoAnio = ingreso.getFullYear();
+      const ingresoMes = ingreso.getMonth() + 1;
+      if (pAnio < ingresoAnio || (pAnio === ingresoAnio && pMes < ingresoMes)) {
+        const empresa = await Empresa.findById(empresaId);
+        const calculo = calcularLiquidacion({ salarioBase: empleado.salarioBase, bonificaciones, descuentosExtras });
+        const liquidacion = { ...calculo, empleado, empresa, periodo: periodoFinal };
+        return res.status(400).render("liquidaciones/empleado", {
+          liquidacion, empleado, empresa, periodo: periodoFinal,
+          error: `El período ${periodoFinal} es anterior a la fecha de ingreso del empleado (${ingreso.toLocaleDateString("es-AR")}).`,
+        });
+      }
+    }
+
+    // Validar que no exista otra liquidación para el mismo período y empleado
+    const existe = await Liquidacion.findOne({ empresaId, empleadoId, periodo: periodoFinal });
+    if (existe) {
+      const empresa = await Empresa.findById(empresaId);
+      const calculo = calcularLiquidacion({ salarioBase: empleado.salarioBase, bonificaciones, descuentosExtras });
+      const liquidacion = { ...calculo, empleado, empresa, periodo: periodoFinal };
+      return res.status(400).render("liquidaciones/empleado", {
+        liquidacion, empleado, empresa, periodo: periodoFinal,
+        error: `Ya existe una liquidación guardada para ${empleado.nombre} ${empleado.apellido} en el período ${periodoFinal}.`,
+      });
+    }
+
+    const calculo = calcularLiquidacion({ salarioBase: empleado.salarioBase, bonificaciones, descuentosExtras });
 
     const liquidacion = new Liquidacion({
       empleadoId,

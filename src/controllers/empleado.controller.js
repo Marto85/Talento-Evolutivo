@@ -3,6 +3,14 @@ const Empresa = require("../models/Empresa");
 const Liquidacion = require("../models/Liquidacion");
 const { validarEmpleado } = require("../utils/validar");
 
+const parseFechaIngreso = (body) => {
+  const { fechaDia, fechaMes, fechaAnio } = body;
+  if (fechaDia && fechaMes && fechaAnio) {
+    return new Date(Date.UTC(Number(fechaAnio), Number(fechaMes) - 1, Number(fechaDia)));
+  }
+  return undefined;
+};
+
 const crear = async (req, res, next) => {
   try {
     const errores = validarEmpleado(req.body);
@@ -15,7 +23,8 @@ const crear = async (req, res, next) => {
     }
 
     const { empresaId } = req.params;
-    const empleado = new Empleado({ ...req.body, empresaId });
+    const fechaIngreso = parseFechaIngreso(req.body);
+    const empleado = new Empleado({ ...req.body, empresaId, ...(fechaIngreso && { fechaIngreso }) });
     await empleado.save();
     res.redirect(`/empresas/${empresaId}/empleados`);
   } catch (error) {
@@ -29,21 +38,25 @@ const actualizar = async (req, res, next) => {
     if (errores) {
       if (req.accepts("json") && !req.accepts("html")) return res.status(400).json({ errores });
       const { empresaId } = req.params;
-      const empleado = await Empleado.findById(req.params.id);
       const empresa = await Empresa.findById(empresaId);
-      return res.status(400).render("empleados/form", {
-        empleado,
+      const empleados = await Empleado.find({ empresaId });
+      return res.status(400).render("empleados/index", {
+        empleados,
         empresa,
         empresaId,
-        titulo: "Editar Empleado",
-        accion: `/empresas/${empresaId}/empleados/${req.params.id}/editar`,
         errores,
+        modalAbierto: `modal-edit-${req.params.id}`,
       });
     }
 
     const { empresaId } = req.params;
     const activo = req.body.activo === "on";
-    const empleado = await Empleado.findByIdAndUpdate(req.params.id, { ...req.body, activo }, { new: true, runValidators: true });
+    const fechaIngreso = parseFechaIngreso(req.body);
+    const empleado = await Empleado.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, activo, ...(fechaIngreso && { fechaIngreso }) },
+      { new: true, runValidators: true }
+    );
 
     if (!empleado) {
       if (req.accepts("json") && !req.accepts("html")) return res.status(404).json({ error: "Empleado no encontrado" });
