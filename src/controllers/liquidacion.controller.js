@@ -229,6 +229,23 @@ const guardarLiquidacion = async (req, res, next) => {
       }
     }
 
+    // Validar que el período no sea más de 2 meses futuro al mes actual
+    const ahora = new Date();
+    const limiteAnio = ahora.getFullYear();
+    const limiteMes = ahora.getMonth() + 3; // mes actual + 2
+    const [pAnioNum, pMesNum] = periodoFinal.split("-").map(Number);
+    const periodoVal = pAnioNum * 12 + pMesNum;
+    const limiteVal = limiteAnio * 12 + limiteMes;
+    if (periodoVal > limiteVal) {
+      const empresa = await Empresa.findById(empresaId);
+      const calculo = calcularLiquidacion({ salarioBase: empleado.salarioBase, bonificaciones, descuentosExtras });
+      const liquidacion = { ...calculo, empleado, empresa, periodo: periodoFinal };
+      return res.status(400).render("liquidaciones/empleado", {
+        liquidacion, empleado, empresa, periodo: periodoFinal,
+        error: `No se pueden generar liquidaciones más de 2 meses adelante del período actual (${limiteAnio}-${String(limiteMes > 12 ? limiteMes - 12 : limiteMes).padStart(2, "0")}).`,
+      });
+    }
+
     // Validar que no exista otra liquidación para el mismo período y empleado
     const existe = await Liquidacion.findOne({ empresaId, empleadoId, periodo: periodoFinal });
     if (existe) {
