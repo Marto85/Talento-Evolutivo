@@ -12,22 +12,13 @@ block contenido
         th CUIT
         th Contacto
         th Empleados
-        th Acciones
     tbody
       each empresa in empresas
-        tr
+        tr(style="cursor:pointer" onclick=`window.location='/empresas/${empresa.id}'`)
           td= empresa.razonSocial
           td= empresa.cuit
           td= empresa.contacto
           td= empresa.cantidadEmpleados
-          td
-            .acciones
-              a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones` title="Ver cálculo")
-                i.fas.fa-calculator
-              a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones/guardadas` title="Guardadas")
-                i.fas.fa-download 
-              a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones/reporte` title="Reporte")
-                i.fas.fa-clipboard-list
       if empresas.length === 0
         tr
-          td(colspan="5" style="text-align:center;color:#999") No hay empresas registradas
+          td(colspan="4" style="text-align:center;color:#999") No hay empresas registradas

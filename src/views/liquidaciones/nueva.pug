@@ -1,0 +1,56 @@
+extends ../layout
+
+block contenido
+  a.btn-back(href=`/empresas/${empresa.id}/liquidaciones`)
+    i.fas.fa-arrow-left
+    |  Volver a liquidaciones
+  .page-header
+    h2 Nueva liquidación
+    span.empresa-nombre= empresa.razonSocial
+  br
+  .card
+    form(method="GET" id="form-nueva-liq")
+      .campo
+        label Empleado
+        select#sel-empleado(name="empleadoId" required)
+          option(value="" disabled selected) Seleccioná un empleado...
+          each emp in empleados
+            option(value=emp.id)= emp.apellido + ', ' + emp.nombre + ' — ' + emp.puesto
+      .campo
+        label Mes
+        select(name="mes")
+          option(value="01") Enero
+          option(value="02") Febrero
+          option(value="03") Marzo
+          option(value="04") Abril
+          option(value="05") Mayo
+          option(value="06") Junio
+          option(value="07") Julio
+          option(value="08") Agosto
+          option(value="09") Septiembre
+          option(value="10") Octubre
+          option(value="11") Noviembre
+          option(value="12") Diciembre
+      .campo
+        label Año
+        input(type="number" name="anio" min="2000" max="2099" required)
+      .form-acciones
+        a.btn(href=`/empresas/${empresa.id}/liquidaciones` style="background:#95a5a6;color:white") Cancelar
+        button.btn.btn-primary(type="submit") Ver liquidación
+
+  script.
+    var _empresaId = '!{empresa.id}';
+    // preseleccionar mes y año actuales
+    var _now = new Date();
+    var _mes = String(_now.getMonth() + 1).padStart(2, '0');
+    document.querySelector('[name="mes"]').value = _mes;
+    document.querySelector('[name="anio"]').value = _now.getFullYear();
+
+    document.getElementById('form-nueva-liq').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var empleadoId = document.getElementById('sel-empleado').value;
+      if (!empleadoId) return;
+      var mes = this.querySelector('[name="mes"]').value;
+      var anio = this.querySelector('[name="anio"]').value;
+      window.location.href = '/empresas/' + _empresaId + '/liquidaciones/' + empleadoId + '?periodo=' + anio + '-' + mes;
+    });

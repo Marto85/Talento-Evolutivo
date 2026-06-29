@@ -3,7 +3,7 @@ extends ../layout
 block contenido
   a.btn-back(href=`/empresas/${empresa.id}`)
     i.fas.fa-arrow-left
-    |  Volver a empresa
+    |  Volver a #{empresa.razonSocial}
   .page-header
     h2 Liquidaciones guardadas
     span.empresa-nombre= empresa.razonSocial

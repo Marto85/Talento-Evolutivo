@@ -3,53 +3,88 @@ extends ../layout
 block contenido
   a.btn-back(href=`/empresas/${empresa.id}`)
     i.fas.fa-arrow-left
-    |  Volver a empresa
+    |  Volver a #{empresa.razonSocial}
   .page-header
     h2 Reporte de liquidaciones
     span.empresa-nombre= empresa.razonSocial
   br
-  .card.card-wide
-    p(style="margin-bottom:16px;") Informe generado para el período #{periodo}.
-    table
-      thead
-        tr
-          th Empleado
-          th Puesto
-          th Bruto
-          th Descuentos
-          th Neto
-      tbody
-        each item in resumen.liquidaciones
-          tr
-            td= item.empleado.nombre + ' ' + item.empleado.apellido
-            td= item.empleado.puesto
-            td= item.format.bruto
-            td= item.format.descuentosTotales
-            td= item.format.neto
-        if resumen.liquidaciones.length === 0
-          tr
-            td(colspan="5" style="text-align:center;color:#999") No hay registros para este período
-  .card.card-wide(style="margin-top: 24px;")
-    h3 Resumen general
-    table
-      tbody
-        tr
-          td
-            strong Total empleados
-          td= resumen.totales.empleados
-        tr
-          td
-            strong Total bruto
-          td= resumen.totales.bruto
-        tr
-          td
-            strong Total descuentos
-          td= resumen.totales.descuentos
-        tr
-          td
-            strong Total neto
-          td= resumen.totales.neto
-    .form-acciones
-      button.btn.btn-warning(type="button" onclick="window.print()")
-        i.fas.fa-print
-        | Imprimir reporte
+  .card(style="margin-bottom:24px")
+    form#form-reporte(method="GET" action="")
+      .campo
+        label Tipo de período
+        select#tipo-periodo(name="tipo" onchange="actualizarPeriodo()")
+          option(value="mes" selected=(tipo==='mes')) Mes
+          option(value="bimestre" selected=(tipo==='bimestre')) Bimestre
+          option(value="trimestre" selected=(tipo==='trimestre')) Trimestre
+          option(value="cuatrimestre" selected=(tipo==='cuatrimestre')) Cuatrimestre
+          option(value="anio" selected=(tipo==='anio')) Año completo
+      .campo
+        label Mes inicial
+        select#sel-mes(name="mes" style=(tipo==='anio'?'display:none':''))
+          option(value="01" selected=(mes==='01')) Enero
+          option(value="02" selected=(mes==='02')) Febrero
+          option(value="03" selected=(mes==='03')) Marzo
+          option(value="04" selected=(mes==='04')) Abril
+          option(value="05" selected=(mes==='05')) Mayo
+          option(value="06" selected=(mes==='06')) Junio
+          option(value="07" selected=(mes==='07')) Julio
+          option(value="08" selected=(mes==='08')) Agosto
+          option(value="09" selected=(mes==='09')) Septiembre
+          option(value="10" selected=(mes==='10')) Octubre
+          option(value="11" selected=(mes==='11')) Noviembre
+          option(value="12" selected=(mes==='12')) Diciembre
+      .campo
+        label Año
+        input(type="number" name="anio" value=anio min="2000" max="2099" required)
+      .form-acciones
+        button.btn.btn-primary(type="submit") Generar reporte
+
+  if resumen
+    if resumen.liquidaciones.length
+      .card.card-wide(style="margin-bottom:16px")
+        p(style="margin-bottom:16px;color:#5f7482;font-size:0.88rem") Período: #{resumen.label}
+        table
+          thead
+            tr
+              th Empleado
+              th Puesto
+              th Bruto
+              th Descuentos
+              th Neto
+          tbody
+            each item in resumen.liquidaciones
+              tr
+                td= item.nombre + ' ' + item.apellido
+                td= item.puesto
+                td= item.bruto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+                td= item.descuentosTotales.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+                td= item.neto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+      .card.card-wide(style="margin-bottom:16px")
+        h3(style="margin-bottom:14px") Totales
+        table
+          tbody
+            tr
+              td: strong Liquidaciones incluidas
+              td= resumen.cantidad
+            tr
+              td: strong Total bruto
+              td= resumen.totalBruto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+            tr
+              td: strong Total descuentos
+              td= resumen.totalDescuentos.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+            tr
+              td: strong Total neto
+              td= resumen.totalNeto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+        .form-acciones
+          button.btn.btn-warning(type="button" onclick="window.print()")
+            i.fas.fa-print
+            |  Imprimir reporte
+    else
+      p(style="color:#999;font-size:0.9rem") No hay liquidaciones guardadas para el período seleccionado.
+
+  script.
+    function actualizarPeriodo() {
+      var tipo = document.getElementById('tipo-periodo').value;
+      var selMes = document.getElementById('sel-mes');
+      selMes.style.display = tipo === 'anio' ? 'none' : '';
+    }

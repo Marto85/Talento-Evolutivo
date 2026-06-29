@@ -3,57 +3,34 @@ extends ../layout
 block contenido
   a.btn-back(href=`/empresas/${empresa.id}`)
     i.fas.fa-arrow-left
-    |  Volver a empresa
+    |  Volver a #{empresa.razonSocial}
   .page-header
-    h2 Liquidaciones por empresa
-    span.empresa-nombre= empresa.razonSocial
+    h2 Liquidaciones — #{empresa.razonSocial}
+    a.btn.btn-primary(href=`/empresas/${empresa.id}/liquidaciones/nueva`) + Generar nueva
   br
-  .card.card-wide
+  if liquidaciones && liquidaciones.length
     table
       thead
         tr
+          th Período
           th Empleado
-          th Puesto
           th Bruto
-          th Descuentos
           th Neto
-          th Acción
+          th Fecha
+          th Acciones
       tbody
-        each item in resumen.liquidaciones
+        each item in liquidaciones
           tr
-            td= item.empleado.nombre + ' ' + item.empleado.apellido
-            td= item.empleado.puesto
-            td= item.format.bruto
-            td= item.format.descuentosTotales
-            td= item.format.neto
+            td= item.periodo
+            td= item.empleadoId ? item.empleadoId.nombre + ' ' + item.empleadoId.apellido : '—'
+            td= item.bruto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+            td= item.neto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+            td= item.createdAt.toLocaleDateString('es-AR')
             td
-              a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones/${item.empleado.id}/recibo` title="Ver recibo")
-                i.fas.fa-file-pdf
-      if resumen.liquidaciones.length === 0
-        tr
-          td(colspan="6" style="text-align:center;color:#999") No hay empleados para esta empresa
-  br
-  .card.card-wide
-    h3 Resumen general
-    table
-      tbody
-        tr
-          td
-            strong Total empleados
-          td= resumen.totales.empleados
-        tr
-          td
-            strong Total bruto
-          td= resumen.totales.bruto
-        tr
-          td
-            strong Total descuentos
-          td= resumen.totales.descuentos
-        tr
-          td
-            strong Total neto
-          td= resumen.totales.neto
-    .form-acciones
-      button.btn.btn-warning(type="button" onclick="window.print()")
-        i.fas.fa-print
-        | Imprimir reporte
+              .acciones
+                a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones/${item.empleadoId?._id || item.empleadoId}/recibo?periodo=${item.periodo}` title="Ver recibo")
+                  i.fas.fa-file-alt
+                a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones/${item.empleadoId?._id || item.empleadoId}/recibo?periodo=${item.periodo}&png=1` title="Descargar PNG" target="_blank")
+                  i.fas.fa-image
+  else
+    p(style="color:#999;font-size:0.9rem") No hay liquidaciones guardadas para esta empresa.

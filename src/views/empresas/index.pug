@@ -3,7 +3,8 @@ extends ../layout
 block contenido
   .page-header
     h2 Empresas
-    button.btn.btn-primary(type="button" onclick="openModal('modal-nueva')") + Nueva Empresa
+    if locals.authUserRole === 'admin'
+      button.btn.btn-primary(type="button" onclick="openModal('modal-nueva')") + Nueva Empresa
   br
   table
     thead
@@ -14,10 +15,11 @@ block contenido
         th Email
         th Activa
         th Empleados
-        th Acciones
+        if locals.authUserRole === 'admin'
+          th Acciones
     tbody
       each empresa in empresas
-        tr
+        tr(style="cursor:pointer" onclick=`window.location='/empresas/${empresa.id}'`)
           td= empresa.razonSocial
           td= empresa.cuit
           td= empresa.contacto
@@ -25,15 +27,13 @@ block contenido
           td
             span(class="badge " + (empresa.activa ? "badge-si" : "badge-no"))= empresa.activa ? "Sí" : "No"
           td= empresa.cantidadEmpleados
-          td
-            .acciones
-              a.btn-icon(href=`/empresas/${empresa.id}/empleados` title="Ver empleados")
-                i.fas.fa-users
-              a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones` title="Liquidaciones")
-                i.fas.fa-file-invoice-dollar
-              button.btn-icon(type="button" onclick=`openModal('modal-edit-${empresa.id}')` title="Editar")
-                i.fas.fa-pencil-alt
-              if locals.authUserRole === 'admin'
+          if locals.authUserRole === 'admin'
+            td
+              .acciones(onclick="event.stopPropagation()")
+                a.btn-icon(href=`/empresas/${empresa.id}` title="Ver detalle")
+                  i.fas.fa-eye
+                button.btn-icon(type="button" onclick=`openModal('modal-edit-${empresa.id}')` title="Editar")
+                  i.fas.fa-pencil-alt
                 button.btn-icon.icon-danger(type="button" data-id=empresa.id data-nombre=empresa.razonSocial title="Eliminar" onclick="openDeleteModal(this)")
                   i.fas.fa-trash
       if empresas.length === 0
@@ -129,4 +129,3 @@ block contenido
     });
     var _modalAbierto = '!{locals.modalAbierto || ""}';
     if (_modalAbierto) openModal(_modalAbierto);
-

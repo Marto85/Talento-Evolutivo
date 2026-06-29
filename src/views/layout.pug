@@ -220,12 +220,9 @@ html(lang="es")
             span.brand-subtitle Gestion de haberes
         nav.nav-links(aria-label="Navegacion principal")
           if locals.isAuthenticated
-            a(class=locals.currentPath.startsWith("/empresas") && !locals.currentPath.startsWith("/empresas/liquidaciones") ? "is-active" : "" href="/empresas")
+            a(class=locals.currentPath.startsWith("/empresas") ? "is-active" : "" href="/empresas")
               i.fas.fa-building
               | Empresas
-            a(class=locals.currentPath.startsWith("/empresas/liquidaciones") ? "is-active" : "" href="/empresas/liquidaciones")
-              i.fas.fa-file-invoice-dollar
-              | Liquidaciones
             if locals.authUserRole === 'admin'
               a(class=locals.currentPath.startsWith('/admin') ? 'is-active' : '' href='/admin/users')
                 i.fas.fa-user-shield

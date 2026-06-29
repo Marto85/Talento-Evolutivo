@@ -1,5 +1,6 @@
 const Empleado = require("../models/Empleado");
 const Empresa = require("../models/Empresa");
+const Liquidacion = require("../models/Liquidacion");
 const { validarEmpleado } = require("../utils/validar");
 
 const crear = async (req, res, next) => {
@@ -137,9 +138,12 @@ const ver = async (req, res, next) => {
       return res.status(404).render("404", { mensaje: "Empleado no encontrado" });
     }
 
-    const empresa = await Empresa.findById(empresaId);
+    const [empresa, liquidaciones] = await Promise.all([
+      Empresa.findById(empresaId),
+      Liquidacion.find({ empleadoId: empleado._id, empresaId }).sort({ periodo: -1, createdAt: -1 }),
+    ]);
     if (req.accepts("json") && !req.accepts("html")) return res.json(empleado);
-    res.render("empleados/detail", { empleado, empresa, empresaId });
+    res.render("empleados/detail", { empleado, empresa, empresaId, liquidaciones });
   } catch (error) {
     next(error);
   }
