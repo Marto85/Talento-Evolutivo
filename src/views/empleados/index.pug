@@ -20,7 +20,7 @@ block contenido
         th Acciones
     tbody
       each empleado in empleados
-        tr
+        tr(style="cursor:pointer" onclick=`window.location='/empresas/${empresaId}/empleados/${empleado.id}'`)
           td= empleado.nombre
           td= empleado.apellido
           td= empleado.dni
@@ -29,7 +29,7 @@ block contenido
           td
             span(class="badge " + (empleado.activo ? "badge-si" : "badge-no"))= empleado.activo ? "Sí" : "No"
           td
-            .acciones
+            .acciones(onclick="event.stopPropagation()")
               a.btn-icon(href=`/empresas/${empresaId}/empleados/${empleado.id}` title="Ver detalle")
                 i.fas.fa-eye
               button.btn-icon(type="button" data-id=empleado.id data-nombre=`${empleado.nombre} ${empleado.apellido}` title="Generar liquidación" onclick="openLiquidarModal(this)")

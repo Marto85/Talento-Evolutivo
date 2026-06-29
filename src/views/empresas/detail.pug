@@ -16,10 +16,6 @@ block contenido
       tbody
         tr
           td
-            strong ID
-          td= empresa.id
-        tr
-          td
             strong CUIT
           td= empresa.cuit
         tr
@@ -38,7 +34,7 @@ block contenido
         tr
           td
             strong Fecha de alta
-          td= empresa.fechaAlta
+          td= empresa.fechaAlta ? new Date(empresa.fechaAlta).toLocaleDateString('es-AR') : '—'
         tr
           td
             strong Empleados
