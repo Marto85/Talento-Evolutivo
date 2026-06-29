@@ -69,6 +69,18 @@ block contenido
         .campo
           label Salario Base
           input(type="number" name="salarioBase" required min="0" step="1000")
+        .campo
+          label Fecha de ingreso
+          .fecha-ingreso-selects
+            select(name="fechaDia" required)
+              option(value="" disabled selected) Día
+              - for (var d = 1; d <= 31; d++)
+                option(value=d)= d
+            select(name="fechaMes" required)
+              option(value="" disabled selected) Mes
+              each m in [['1','Enero'],['2','Febrero'],['3','Marzo'],['4','Abril'],['5','Mayo'],['6','Junio'],['7','Julio'],['8','Agosto'],['9','Septiembre'],['10','Octubre'],['11','Noviembre'],['12','Diciembre']]
+                option(value=m[0])= m[1]
+            input(type="number" name="fechaAnio" placeholder="Año" min="1900" max=new Date().getFullYear() required)
         .form-acciones
           button.btn(type="button" onclick="closeModal('modal-nuevo')" style="background:#95a5a6;color:white") Cancelar
           button.btn.btn-primary(type="submit") Guardar

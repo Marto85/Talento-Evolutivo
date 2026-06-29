@@ -42,7 +42,7 @@ block contenido
         tr
           td
             strong Fecha de ingreso
-          td= empleado.fechaIngreso
+          td= empleado.fechaIngreso ? new Date(empleado.fechaIngreso).toLocaleDateString('es-AR') : '—'
   br
   h3(style="margin-bottom:14px") Historial de liquidaciones
   if liquidaciones && liquidaciones.length
