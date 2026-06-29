@@ -3,6 +3,7 @@ const ctrl = require("../controllers/liquidacion.controller");
 
 const router = Router({ mergeParams: true });
 
+router.get("/liquidaciones/nueva", ctrl.mostrarNuevaLiquidacion);
 router.get("/liquidaciones/guardadas", ctrl.listarLiquidacionesGuardadasEmpresa);
 router.get("/liquidaciones/reporte", ctrl.generarReporteEmpresa);
 router.get("/liquidaciones", ctrl.listarLiquidacionesEmpresa);

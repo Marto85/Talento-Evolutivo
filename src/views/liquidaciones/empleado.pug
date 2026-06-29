@@ -58,8 +58,17 @@ block contenido
         label Descuentos extras
         input(type="number" name="descuentosExtras" value="0" min="0" step="100" required)
       .campo
-        label Periodo
-        input(type="text" name="periodo" value=periodo placeholder="YYYY-MM" pattern="\d{4}-\d{2}" required)
+        label Mes
+        select(name="mes")
+          - var meses = [['01','Enero'],['02','Febrero'],['03','Marzo'],['04','Abril'],['05','Mayo'],['06','Junio'],['07','Julio'],['08','Agosto'],['09','Septiembre'],['10','Octubre'],['11','Noviembre'],['12','Diciembre']]
+          each m in meses
+            option(value=m[0] selected=(periodo && periodo.split('-')[1]===m[0]))= m[1]
+      .campo
+        label Año
+        input(type="number" name="anio" value=periodo ? periodo.split('-')[0] : new Date().getFullYear() min="2000" max="2099" required)
+      if locals.error
+        .error-list(style="margin-bottom:12px")
+          p= error
       .form-acciones
         button.btn(type="submit") Guardar liquidación
         a.btn.btn-secondary(href=`/empresas/${empresa.id}/liquidaciones/${empleado.id}/recibo?periodo=${periodo}`) Ver recibo

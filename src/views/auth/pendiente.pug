@@ -1,0 +1,10 @@
+extends ../layout
+
+block contenido
+  .login-shell
+    .card.login-card
+      h2 Cuenta pendiente de aprobación
+      p.login-copy Tu cuenta fue creada correctamente. Un administrador debe aprobarla antes de que puedas ingresar.
+      p.login-copy(style="margin-top:8px") Una vez aprobada, podrás iniciar sesión normalmente.
+      .form-acciones(style="margin-top:24px;justify-content:center")
+        a.btn(href="/login" style="background:#95a5a6;color:white") Volver al login

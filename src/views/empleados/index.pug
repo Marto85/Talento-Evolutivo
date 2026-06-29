@@ -1,9 +1,9 @@
 extends ../layout
 
 block contenido
-  a.btn-back(href="/empresas")
+  a.btn-back(href=`/empresas/${empresaId}`)
     i.fas.fa-arrow-left
-    |  Volver a Empresas
+    |  Volver a #{empresa.razonSocial}
   .page-header
     h2 Empleados — #{empresa.razonSocial}
     button.btn.btn-primary(type="button" onclick="openModal('modal-nuevo')") + Nuevo Empleado
@@ -32,7 +32,9 @@ block contenido
             .acciones
               a.btn-icon(href=`/empresas/${empresaId}/empleados/${empleado.id}` title="Ver detalle")
                 i.fas.fa-eye
-              a.btn-icon(href=`/empresas/${empresaId}/empleados/${empleado.id}/editar` title="Editar")
+              button.btn-icon(type="button" data-id=empleado.id data-nombre=`${empleado.nombre} ${empleado.apellido}` title="Generar liquidación" onclick="openLiquidarModal(this)")
+                i.fas.fa-calculator
+              button.btn-icon(type="button" onclick=`openModal('modal-edit-${empleado.id}')` title="Editar")
                 i.fas.fa-pencil-alt
               if locals.authUserRole === 'admin'
                 button.btn-icon.icon-danger(type="button" data-id=empleado.id data-nombre=`${empleado.nombre} ${empleado.apellido}` title="Eliminar" onclick="openDeleteModal(this)")
@@ -71,6 +73,84 @@ block contenido
           button.btn(type="button" onclick="closeModal('modal-nuevo')" style="background:#95a5a6;color:white") Cancelar
           button.btn.btn-primary(type="submit") Guardar
 
+  //- Modales Editar (uno por fila)
+  each empleado in empleados
+    div(id=`modal-edit-${empleado.id}` class="modal-overlay" style="display:none")
+      .modal-box
+        h3 Editar Empleado
+        if locals.errores && locals.modalAbierto === 'modal-edit-' + empleado.id
+          .error-list
+            each e in errores
+              p= e
+        form(method="POST" action=`/empresas/${empresaId}/empleados/${empleado.id}/editar`)
+          input(type="hidden" name="_csrf" value=csrfToken)
+          .campo
+            label Nombre
+            input(type="text" name="nombre" value=empleado.nombre required)
+          .campo
+            label Apellido
+            input(type="text" name="apellido" value=empleado.apellido required)
+          .campo
+            label DNI
+            input(type="text" name="dni" value=empleado.dni required)
+          .campo
+            label Puesto
+            input(type="text" name="puesto" value=empleado.puesto required)
+          .campo
+            label Salario Base
+            input(type="number" name="salarioBase" value=empleado.salarioBase required min="0" step="1000")
+          .campo
+            label Fecha de ingreso
+            - var fi = empleado.fechaIngreso ? new Date(empleado.fechaIngreso) : null
+            - var fiDia = fi ? fi.getUTCDate() : ''
+            - var fiMes = fi ? fi.getUTCMonth() + 1 : ''
+            - var fiAnio = fi ? fi.getUTCFullYear() : ''
+            .fecha-ingreso-selects
+              select(name="fechaDia" required)
+                option(value="" disabled selected=(fiDia==='')) Día
+                - for (var d = 1; d <= 31; d++)
+                  option(value=d selected=(fiDia===d))= d
+              select(name="fechaMes" required)
+                option(value="" disabled selected=(fiMes==='')) Mes
+                each m in [['1','Enero'],['2','Febrero'],['3','Marzo'],['4','Abril'],['5','Mayo'],['6','Junio'],['7','Julio'],['8','Agosto'],['9','Septiembre'],['10','Octubre'],['11','Noviembre'],['12','Diciembre']]
+                  option(value=m[0] selected=(String(fiMes)===m[0]))= m[1]
+              input(type="number" name="fechaAnio" placeholder="Año" value=fiAnio min="1900" max=new Date().getFullYear() required)
+          .campo
+            label.checkbox-label
+              input(type="checkbox" name="activo" checked=empleado.activo)
+              |  Activo
+          .form-acciones
+            button.btn(type="button" onclick=`closeModal('modal-edit-${empleado.id}')` style="background:#95a5a6;color:white") Cancelar
+            button.btn.btn-primary(type="submit") Guardar
+
+  //- Modal Liquidación individual
+  #modal-liquidar.modal-overlay(style="display:none")
+    .modal-box
+      h3 Generar liquidación
+      p#liquidar-nombre(style="color:#5f7482;font-size:0.88rem;margin-bottom:16px")
+      form#liquidar-form(method="GET" action="")
+        .campo
+          label Mes
+          select(name="mes")
+            option(value="01") Enero
+            option(value="02") Febrero
+            option(value="03") Marzo
+            option(value="04") Abril
+            option(value="05") Mayo
+            option(value="06") Junio
+            option(value="07") Julio
+            option(value="08") Agosto
+            option(value="09") Septiembre
+            option(value="10") Octubre
+            option(value="11") Noviembre
+            option(value="12") Diciembre
+        .campo
+          label Año
+          input(type="number" name="anio" min="2000" max="2099" required)
+        .form-acciones
+          button.btn(type="button" onclick="closeModal('modal-liquidar')" style="background:#95a5a6;color:white") Cancelar
+          button.btn.btn-primary(type="submit") Ver liquidación
+
   //- Modal Eliminar
   #modal-delete.modal-overlay(style="display:none")
     .modal-box
@@ -83,17 +163,31 @@ block contenido
           button.btn.btn-danger(type="submit") Eliminar
 
   script.
+    var _empresaId = '!{empresaId}';
+    var _now = new Date();
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
     }
     function closeModal(id) {
       document.getElementById(id).style.display = 'none';
     }
+    function openLiquidarModal(btn) {
+      var id = btn.dataset.id;
+      var nombre = btn.dataset.nombre;
+      document.getElementById('liquidar-nombre').textContent = nombre;
+      document.getElementById('liquidar-form').action = '/empresas/' + _empresaId + '/liquidaciones/' + id;
+      // preseleccionar mes y año actuales
+      var form = document.getElementById('liquidar-form');
+      var mes = String(_now.getMonth() + 1).padStart(2, '0');
+      form.querySelector('[name="mes"]').value = mes;
+      form.querySelector('[name="anio"]').value = _now.getFullYear();
+      openModal('modal-liquidar');
+    }
     function openDeleteModal(btn) {
-      const id = btn.dataset.id;
-      const nombre = btn.dataset.nombre;
+      var id = btn.dataset.id;
+      var nombre = btn.dataset.nombre;
       document.getElementById('delete-msg').textContent = '¿Eliminar "' + nombre + '"?';
-      document.getElementById('delete-form').action = '/empresas/#{empresaId}/empleados/' + id + '/eliminar';
+      document.getElementById('delete-form').action = '/empresas/' + _empresaId + '/empleados/' + id + '/eliminar';
       openModal('modal-delete');
     }
     document.querySelectorAll('.modal-overlay').forEach(function(el) {
@@ -101,6 +195,12 @@ block contenido
         if (e.target === el) closeModal(el.id);
       });
     });
+    // El form de liquidar construye periodo como YYYY-MM antes de submit
+    document.getElementById('liquidar-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var mes = this.querySelector('[name="mes"]').value;
+      var anio = this.querySelector('[name="anio"]').value;
+      window.location.href = this.action + '?periodo=' + anio + '-' + mes;
+    });
     var _modalAbierto = '!{locals.modalAbierto || ""}';
     if (_modalAbierto) openModal(_modalAbierto);
-

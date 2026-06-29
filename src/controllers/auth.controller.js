@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const Usuario = require("../models/Usuario");
 const { passport, ensureDefaultUser, JWT_SECRET, JWT_EXPIRES_IN } = require("../config/passport");
 const { hashPassword } = require("../utils/password");
+const { notificarAdmins } = require("../utils/notificar");
 
 const renderLogin = (res, options = {}) => {
   res.render("auth/login", {
@@ -56,39 +57,11 @@ const registrar = async (req, res, next) => {
     }
 
     const hashed = await hashPassword(password);
-    const nuevo = await Usuario.create({ user, password: hashed, role: "empleado" });
+    await Usuario.create({ user, password: hashed, role: "empleado", aprobado: false });
 
-    // Generar JWT y guardarlo en el usuario
-    const token = jwt.sign({ id: nuevo.id, user: nuevo.user, role: nuevo.role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-    nuevo.token = token;
-    await nuevo.save();
+    await notificarAdmins(req.app, `Nuevo usuario pendiente de aprobación: ${user}`, '/admin/users');
 
-    // Auto-login: crear el objeto de sesión esperado por passport
-    const authUser = { id: nuevo.id, user: nuevo.user, role: nuevo.role, token };
-
-    req.logIn(authUser, (loginErr) => {
-      if (loginErr) return next(loginErr);
-
-      const safeUser = JSON.stringify(authUser.user);
-
-      return res.send(`<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ingresando...</title>
-  </head>
-  <body>
-    <p>Ingresando...</p>
-    <script>
-      localStorage.setItem('isLogged', 'true');
-      localStorage.setItem('loggedUser', ${safeUser});
-      localStorage.setItem('authToken', '${token}');
-      window.location.replace('/empresas');
-    </script>
-  </body>
-</html>`);
-    });
+    return res.redirect("/pendiente");
   } catch (error) {
     // Dejar que el errorHandler maneje duplicados y demás
     next(error);
@@ -162,4 +135,8 @@ const logout = async (req, res, next) => {
   }
 };
 
-module.exports = { mostrarLogin, mostrarRegistro, registrar, login, logout };
+const mostrarPendiente = (req, res) => {
+  res.render("auth/pendiente", { authPage: true, authRequired: false });
+};
+
+module.exports = { mostrarLogin, mostrarRegistro, registrar, login, logout, mostrarPendiente };

@@ -16,9 +16,15 @@ const ensureDefaultUser = async () => {
       user: DEFAULT_AUTH_USER,
       password: await hashPassword(DEFAULT_AUTH_PASSWORD),
       role: "admin",
+      aprobado: true,
     });
     return;
   }
+
+  await Usuario.updateOne(
+    { user: DEFAULT_AUTH_USER },
+    { $set: { aprobado: true } }
+  );
 
   await Usuario.updateOne(
     {
@@ -61,6 +67,10 @@ passport.use(
 
         if (!usuario || !(await verifyPassword(normalizedPassword, usuario.password))) {
           return done(null, false, { message: "Usuario o password incorrectos" });
+        }
+
+        if (!usuario.aprobado) {
+          return done(null, false, { message: "Tu cuenta está pendiente de aprobación por un administrador." });
         }
 
         if (!isPasswordHash(usuario.password)) {

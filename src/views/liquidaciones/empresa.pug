@@ -3,57 +3,88 @@ extends ../layout
 block contenido
   a.btn-back(href=`/empresas/${empresa.id}`)
     i.fas.fa-arrow-left
-    |  Volver a empresa
+    |  Volver a #{empresa.razonSocial}
   .page-header
-    h2 Liquidaciones por empresa
-    span.empresa-nombre= empresa.razonSocial
+    h2 Liquidaciones — #{empresa.razonSocial}
+    button.btn.btn-primary(type="button" onclick="openModal('modal-nueva-liq')") + Generar nueva
   br
-  .card.card-wide
+  if liquidaciones && liquidaciones.length
     table
       thead
         tr
+          th Período
           th Empleado
-          th Puesto
           th Bruto
-          th Descuentos
           th Neto
-          th Acción
+          th Fecha
+          th Acciones
       tbody
-        each item in resumen.liquidaciones
+        each item in liquidaciones
           tr
-            td= item.empleado.nombre + ' ' + item.empleado.apellido
-            td= item.empleado.puesto
-            td= item.format.bruto
-            td= item.format.descuentosTotales
-            td= item.format.neto
+            td= item.periodo
+            td= item.empleadoId ? item.empleadoId.nombre + ' ' + item.empleadoId.apellido : '—'
+            td= item.bruto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+            td= item.neto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+            td= item.createdAt.toLocaleDateString('es-AR')
             td
-              a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones/${item.empleado.id}/recibo` title="Ver recibo")
-                i.fas.fa-file-pdf
-      if resumen.liquidaciones.length === 0
-        tr
-          td(colspan="6" style="text-align:center;color:#999") No hay empleados para esta empresa
-  br
-  .card.card-wide
-    h3 Resumen general
-    table
-      tbody
-        tr
-          td
-            strong Total empleados
-          td= resumen.totales.empleados
-        tr
-          td
-            strong Total bruto
-          td= resumen.totales.bruto
-        tr
-          td
-            strong Total descuentos
-          td= resumen.totales.descuentos
-        tr
-          td
-            strong Total neto
-          td= resumen.totales.neto
-    .form-acciones
-      button.btn.btn-warning(type="button" onclick="window.print()")
-        i.fas.fa-print
-        | Imprimir reporte
+              - var empId = item.empleadoId && item.empleadoId._id ? item.empleadoId._id : item.empleadoId
+              .acciones
+                a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones/${empId}/recibo?periodo=${item.periodo}` title="Ver recibo")
+                  i.fas.fa-file-alt
+                a.btn-icon(href=`/empresas/${empresa.id}/liquidaciones/${empId}/recibo?periodo=${item.periodo}&png=1` title="Descargar PNG" target="_blank")
+                  i.fas.fa-image
+  else
+    p(style="color:#999;font-size:0.9rem") No hay liquidaciones guardadas para esta empresa.
+
+  //- Modal Nueva Liquidación
+  #modal-nueva-liq.modal-overlay(style="display:none")
+    .modal-box
+      h3 Nueva liquidación
+      form#form-nueva-liq
+        .campo
+          label Empleado
+          select#sel-empleado(name="empleadoId" required)
+            option(value="" disabled selected) Seleccioná un empleado...
+            each emp in empleados
+              option(value=emp.id)= emp.apellido + ', ' + emp.nombre + ' — ' + emp.puesto
+        .campo
+          label Mes
+          select#sel-mes(name="mes")
+            option(value="01") Enero
+            option(value="02") Febrero
+            option(value="03") Marzo
+            option(value="04") Abril
+            option(value="05") Mayo
+            option(value="06") Junio
+            option(value="07") Julio
+            option(value="08") Agosto
+            option(value="09") Septiembre
+            option(value="10") Octubre
+            option(value="11") Noviembre
+            option(value="12") Diciembre
+        .campo
+          label Año
+          input#sel-anio(type="number" name="anio" min="2000" max="2099" required)
+        .form-acciones
+          button.btn(type="button" onclick="closeModal('modal-nueva-liq')" style="background:#95a5a6;color:white") Cancelar
+          button.btn.btn-primary(type="submit") Ver liquidación
+
+  script.
+    var _empresaId = '!{empresa.id}';
+    var _now = new Date();
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    document.querySelectorAll('.modal-overlay').forEach(function(el) {
+      el.addEventListener('click', function(e) { if (e.target === el) closeModal(el.id); });
+    });
+    // Preseleccionar mes y año actuales al abrir
+    document.getElementById('sel-mes').value = String(_now.getMonth() + 1).padStart(2, '0');
+    document.getElementById('sel-anio').value = _now.getFullYear();
+    document.getElementById('form-nueva-liq').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var empleadoId = document.getElementById('sel-empleado').value;
+      if (!empleadoId) return;
+      var mes = document.getElementById('sel-mes').value;
+      var anio = document.getElementById('sel-anio').value;
+      window.location.href = '/empresas/' + _empresaId + '/liquidaciones/' + empleadoId + '?periodo=' + anio + '-' + mes;
+    });

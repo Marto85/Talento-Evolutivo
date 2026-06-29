@@ -28,6 +28,22 @@ block contenido
       .campo
         label Salario Base
         input(type="number" name="salarioBase" value=empleado ? empleado.salarioBase : "" required min="0")
+      .campo
+        label Fecha de ingreso
+        - var fi = empleado && empleado.fechaIngreso ? new Date(empleado.fechaIngreso) : null
+        - var fiDia = fi ? fi.getUTCDate() : ''
+        - var fiMes = fi ? fi.getUTCMonth() + 1 : ''
+        - var fiAnio = fi ? fi.getUTCFullYear() : ''
+        .fecha-ingreso-selects
+          select(name="fechaDia" required)
+            option(value="" disabled selected=(fiDia==='')) Día
+            - for (var d = 1; d <= 31; d++)
+              option(value=d selected=(fiDia===d))= d
+          select(name="fechaMes" required)
+            option(value="" disabled selected=(fiMes==='')) Mes
+            each m in [['1','Enero'],['2','Febrero'],['3','Marzo'],['4','Abril'],['5','Mayo'],['6','Junio'],['7','Julio'],['8','Agosto'],['9','Septiembre'],['10','Octubre'],['11','Noviembre'],['12','Diciembre']]
+              option(value=m[0] selected=(String(fiMes)===m[0]))= m[1]
+          input(type="number" name="fechaAnio" placeholder="Año" value=fiAnio min="1900" max=new Date().getFullYear() required)
       if empleado
         .campo
           label.checkbox-label
