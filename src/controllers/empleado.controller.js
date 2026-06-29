@@ -38,14 +38,16 @@ const actualizar = async (req, res, next) => {
     if (errores) {
       if (req.accepts("json") && !req.accepts("html")) return res.status(400).json({ errores });
       const { empresaId } = req.params;
+      const empleado = await Empleado.findById(req.params.id);
       const empresa = await Empresa.findById(empresaId);
-      const empleados = await Empleado.find({ empresaId });
-      return res.status(400).render("empleados/index", {
-        empleados,
+      const liquidaciones = await Liquidacion.find({ empleadoId: req.params.id, empresaId }).sort({ periodo: -1, createdAt: -1 });
+      return res.status(400).render("empleados/detail", {
+        empleado,
         empresa,
         empresaId,
+        liquidaciones,
         errores,
-        modalAbierto: `modal-edit-${req.params.id}`,
+        modalAbierto: "modal-editar",
       });
     }
 
@@ -63,7 +65,7 @@ const actualizar = async (req, res, next) => {
       return res.status(404).render("404", { mensaje: "Empleado no encontrado" });
     }
 
-    res.redirect(`/empresas/${empresaId}/empleados`);
+    res.redirect(`/empresas/${empresaId}/empleados/${req.params.id}`);
   } catch (error) {
     next(error);
   }
