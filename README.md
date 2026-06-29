@@ -27,10 +27,16 @@ Lee el archivo `MONGODB_SETUP.md` para instrucciones detalladas sobre cómo:
 ### 3. Configurar variables de entorno
 Crea un archivo `.env` en la raíz del proyecto:
 ```
-MONGODB_URI=mongodb+srv://usuario:contraseña@cluster.mongodb.net/talento-evolutivo?retryWrites=true&w=majority
+MONGODB_URI=mongodb://talento_dev:NMJsisezcUudY6GL@ac-fcciuxf-shard-00-00.xfgj31u.mongodb.net:27017,ac-fcciuxf-shard-00-01.xfgj31u.mongodb.net:27017,ac-fcciuxf-shard-00-02.xfgj31u.mongodb.net:27017/?ssl=true&replicaSet=atlas-qnowfn-shard-0&authSource=admin&appName=Cluster0
+
 PORT=3000
 NODE_ENV=development
-SESSION_SECRET=tu_secreto_seguro_para_sesiones
+
+SESSION_SECRET=supersecreto
+
+# JWT Configuration
+JWT_SECRET=talento-evolutivo-jwt-secret-super-seguro-cambiar-en-produccion
+JWT_EXPIRES_IN=30m
 ```
 
 `SESSION_SECRET` debe ser un valor largo, privado y aleatorio. En producción es obligatorio porque se usa para firmar la cookie de sesión.
